@@ -3,8 +3,13 @@
     src: url(./static/NotoSans-Regular.ttf);
 }
 
+@font-face {
+    font-family: Roboto;
+    src: url(./static/Roboto-Light.ttf);
+}
+
 body {
-    background-color: black;
+    background-color: #121212;
     color: white;
     font-size: 24px;
     font-family: NotoSans;
