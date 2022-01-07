@@ -1,0 +1,29 @@
+.card-details-form {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10%;
+    padding: 5%;
+    background-color: rgb(45 69 106 / 20%);
+}
+
+.card-details-form > label {
+    margin: 5% 0;
+    font-size: 16px;
+}
+
+.card-details-form > input {
+    padding: 2%;
+    border: 0;
+    font-size: 14px;
+    color: white;
+    background: rgba(133, 170, 224, 0.2);
+}
+
+.card-details-form > button {
+    margin: 30% 0 0 0;
+    padding: 5% 0;
+    border: 0;
+    font-size: 30px;
+    color: white;
+    background: rgba(133, 170, 224, 0.2);
+}
