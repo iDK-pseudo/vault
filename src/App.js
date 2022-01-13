@@ -13,6 +13,10 @@ function App() {
     setDisplayForm(true);
   }
 
+  function handleNewEntrySuccess() {
+    setDisplayForm(false);
+  }
+
   if(!displayForm){
     return (
       <div>
@@ -25,7 +29,7 @@ function App() {
     return (
       <div>
         <Header/>
-        <Form/>
+        <Form onNewEntrySuccess={handleNewEntrySuccess}/>
       </div>
     )
   }

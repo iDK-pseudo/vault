@@ -1,13 +1,13 @@
 const express = require("express");
-const path = require('path');
 const { body, check, validationResult } = require('express-validator');
 var bodyParser = require('body-parser');
+const { MongoClient } = require("mongodb");
 
 const PORT = process.env.PORT || 3001;
 
 const app = express();
 
-app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.json());       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
@@ -24,13 +24,28 @@ app.post("/api",
       errorsResult.errors.forEach((error)=>{
         payload[error.param] = {value: req.body[error.param], showError: true, errorMsg: error.msg};
       })
-      console.log(payload);
       res.send(payload);
+    }else{
+      writeToDB(req.body);
+      res.send({success: true});
     }
   }
 );
   
-
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
+
+writeToDB = async (data) =>{
+  const uri = "mongodb+srv://shivam:shivam1999@firstcluster.kxtke.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+  const client = new MongoClient(uri);
+  try {
+    await client.connect();
+    const database = client.db('banking');
+    const cardData = database.collection('cardData');
+    const result = await cardData.insertOne(data);
+    console.log(`A document was inserted with the _id: ${result.insertedId}`);
+  } finally {
+    await client.close();
+  }
+}

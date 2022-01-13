@@ -32,7 +32,11 @@ class Form extends Component{
         };
         const response = await fetch('/api', requestOptions);
         const data = await response.json();
-        this.setState(data);
+        if(data.success){
+            this.props.onNewEntrySuccess();
+        }else{
+            this.setState(data);
+        }
     }
 
     generatePayload = (state) => {
