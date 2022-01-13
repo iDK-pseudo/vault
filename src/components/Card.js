@@ -3,9 +3,9 @@ import '../styles/Card.css';
 
 function Card () {
     return (
-        <div class="card">
-            <img class="bank-logo" src={SBILogo}/>
-            <div class="card-number">
+        <div className="card">
+            <img className="bank-logo" src={SBILogo}/>
+            <div className="card-number">
                 <div>
                     1234
                 </div>
@@ -16,13 +16,13 @@ function Card () {
                     9011
                 </div>
             </div>
-            <div class="card-detail-grid">
+            <div className="card-detail-grid">
             <div>
-                <p class="card-detail-title"> Card Holder </p>
+                <p className="card-detail-title"> Card Holder </p>
                 <p> Alex Ferg </p>
             </div>
             <div>
-                <p class="card-detail-title">Expires</p>
+                <p className="card-detail-title">Expires</p>
                 <p>06/22</p>
             </div>
             <div>

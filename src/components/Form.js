@@ -49,7 +49,7 @@ class Form extends Component{
 
     render () {
         return (
-            <form class="card-details-form" onSubmit={this.handleSubmit}>
+            <form className="card-details-form" onSubmit={this.handleSubmit}>
                 <label> Bank </label>
                 <input className={this.state.bank.showError ? 'error' : ''} name="bank" type="text" value={this.state.bank.value} onChange={this.handleChange}/>
                 <p className="error-msg">{this.state.bank.errorMsg}</p> 
