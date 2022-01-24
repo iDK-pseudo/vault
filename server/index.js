@@ -2,8 +2,9 @@ const express = require("express");
 const { body, check, validationResult } = require('express-validator');
 var bodyParser = require('body-parser');
 const { MongoClient } = require("mongodb");
+const path = require("path");
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 
@@ -38,6 +39,12 @@ app.get('/api',
     res.send(entries);
   }
 )
+
+app.use(express.static(path.join(__dirname, "../build/")));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../build/', 'index.html'));
+});
   
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
