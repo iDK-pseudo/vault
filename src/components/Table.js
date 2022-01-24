@@ -35,35 +35,31 @@ function Table (props) {
                         <th>Expires</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr className="data-row">
-                        <td colSpan={3}>
-                            Loading...
-                        </td>
-                    </tr>
-                </tbody>
             </table>
         ) 
     }
 
     return(
-        <table className="table">
-            <thead>
-                <tr className="header-row">
-                    <th>Bank</th>
-                    <th>Last 4 Digits</th>
-                    <th>Expires</th>
-                </tr>
-            </thead>
-            <tbody>
-                {entries}
-                <tr className="data-row">    
-                    <td className="add-row" colSpan="3" onClick={()=>props.onClickNewItem()}>
-                        +
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div>
+            <table className="table">
+                <thead>
+                    <tr className="header-row">
+                        <th>Bank</th>
+                        <th>Last 4 Digits</th>
+                        <th>Expires</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {entries}
+                    <tr className="data-row">    
+                        {/* <td className="add-row" colSpan="3" onClick={()=>props.onClickNewItem()}>
+                            +
+                        </td> */}
+                    </tr>
+                </tbody>
+            </table>
+            <button className="add-button" onClick={()=>props.onClickNewItem()}>+</button>
+        </div>
     );
 }
 
