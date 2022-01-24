@@ -9,11 +9,11 @@ function App() {
 
   const [displayForm, setDisplayForm] = useState(false);
 
-  function handleNewItemClick () {
+  function showForm () {
     setDisplayForm(true);
   }
 
-  function handleNewEntrySuccess() {
+  function hideForm() {
     setDisplayForm(false);
   }
 
@@ -22,14 +22,14 @@ function App() {
       <div>
         <Header/>
         <Card/>
-        <Table onClickNewItem={handleNewItemClick}/>
+        <Table onClickNewItem={showForm}/>
       </div>
     );
   }else{
     return (
       <div>
         <Header/>
-        <Form onNewEntrySuccess={handleNewEntrySuccess}/>
+        <Form onNewEntrySuccess={hideForm} handleBackClick={hideForm}/>
       </div>
     )
   }

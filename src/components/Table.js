@@ -51,11 +51,6 @@ function Table (props) {
                 </thead>
                 <tbody>
                     {entries}
-                    <tr className="data-row">    
-                        {/* <td className="add-row" colSpan="3" onClick={()=>props.onClickNewItem()}>
-                            +
-                        </td> */}
-                    </tr>
                 </tbody>
             </table>
             <button className="add-button" onClick={()=>props.onClickNewItem()}>+</button>

@@ -49,21 +49,24 @@ class Form extends Component{
 
     render () {
         return (
-            <form className="card-details-form" onSubmit={this.handleSubmit}>
-                <label> Bank </label>
-                <input className={this.state.bank.showError ? 'error' : ''} name="bank" type="text" value={this.state.bank.value} onChange={this.handleChange}/>
-                <p className="error-msg">{this.state.bank.errorMsg}</p> 
-                <label> Card Number </label>
-                <input className={this.state.cardnum.showError ? 'error' : ''} name="cardnum" type="number" value={this.state.cardnum.value} onChange={this.handleChange}/>
-                <p className="error-msg">{this.state.cardnum.errorMsg}</p> 
-                <label> Expires </label>
-                <input className={this.state.expires.showError ? 'error' : ''} name="expires" type="month" onChange={this.handleChange}/>
-                <p className="error-msg">{this.state.expires.errorMsg}</p> 
-                <label> CVV </label>
-                <input className={this.state.cvv.showError ? 'error' : ''} name="cvv" type="text" value={this.state.cvv.value} onChange={this.handleChange}/>
-                <p className="error-msg">{this.state.cvv.errorMsg}</p> 
-                <button type="submit"> + </button>
-            </form>
+            <div>
+                <form className="card-details-form" onSubmit={this.handleSubmit}>
+                    <label> Bank </label>
+                    <input className={this.state.bank.showError ? 'error' : ''} name="bank" type="text" value={this.state.bank.value} onChange={this.handleChange}/>
+                    <p className="error-msg">{this.state.bank.errorMsg}</p> 
+                    <label> Card Number </label>
+                    <input className={this.state.cardnum.showError ? 'error' : ''} name="cardnum" type="number" value={this.state.cardnum.value} onChange={this.handleChange}/>
+                    <p className="error-msg">{this.state.cardnum.errorMsg}</p> 
+                    <label> Expires </label>
+                    <input className={this.state.expires.showError ? 'error' : ''} name="expires" type="month" onChange={this.handleChange}/>
+                    <p className="error-msg">{this.state.expires.errorMsg}</p> 
+                    <label> CVV </label>
+                    <input className={this.state.cvv.showError ? 'error' : ''} name="cvv" type="text" value={this.state.cvv.value} onChange={this.handleChange}/>
+                    <p className="error-msg">{this.state.cvv.errorMsg}</p> 
+                    <button type="submit"> + </button>
+                </form>
+                <button className='back-button' onClick={this.props.handleBackClick}>Back</button>
+            </div>
         )
     }
 }
