@@ -4,13 +4,10 @@ import { useState, useEffect } from 'react';
 function Table (props) {
 
     const [entries, setEntries] = useState([]);
-    
+    const [dataFetched, setDataFetched] = useState(false);
+
     useEffect(() => {
         const fetchData = async () => {
-            const requestOptions = {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
-            };
             const response = await fetch('/api');
             const data = await response.json();
             const modifiedEntries = data.map((eachEntry)=>{
@@ -23,9 +20,31 @@ function Table (props) {
                 )
             })
             setEntries(modifiedEntries);
+            setDataFetched(true);
         };
         fetchData();
-    });
+    }, []);
+
+    if(!dataFetched){
+        return (
+            <table className="table">
+                <thead>
+                    <tr className="header-row">
+                        <th>Bank</th>
+                        <th>Last 4 Digits</th>
+                        <th>Expires</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr className="data-row">
+                        <td colSpan={3}>
+                            Loading...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        ) 
+    }
 
     return(
         <table className="table">
