@@ -8,9 +8,10 @@ function Table (props) {
 
     useEffect(() => {
         if(props.tableData.length){
+            const id = props.selectedCard._id || props.tableData[0]._id;
             const modifiedEntries = props.tableData.map((eachEntry)=>{
                 return ( 
-                    <tr key={eachEntry._id} className='data-row' data-id={eachEntry._id} onClick={props.handleItemClick}>
+                    <tr key={eachEntry._id} className={eachEntry._id === id ? 'data-row selected' : 'data-row' } data-id={eachEntry._id} onClick={props.handleItemClick}>
                         <td> {eachEntry.bank} </td>
                         <td> {eachEntry.cardnum.slice(-4)} </td> 
                     </tr>
@@ -19,21 +20,19 @@ function Table (props) {
             setEntries(modifiedEntries);
             setDataPresent(true);
         }
-    },[props.tableData]);
+    },[props.tableData, props.selectedCard]);
 
     if(!dataPresent){
         return (
             <table className="table">
                 <thead>
-                    <tr className="header-row">
-                        <th>Bank</th>
-                        <th>Last 4 Digits</th>
+                    <tr>
+                        <td>Loading...</td>
                     </tr>
                 </thead>
-            </table>
+            </table> 
         ) 
     }
-
     return(
         <div>
             <table className="table">
@@ -47,7 +46,7 @@ function Table (props) {
                     {entries}
                 </tbody>
             </table>
-            <button className="add-button" onClick={()=>props.onClickNewItem()}>+</button>
+            <button className="add-button" onClick={()=>props.onClickNewItem()}>Add</button>
         </div>
     );
 }

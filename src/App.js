@@ -32,7 +32,7 @@ class App extends Component {
   componentDidMount = async () => {
     const response = await fetch('/api');
     const data = await response.json();
-    this.setState({tableData: data});
+    this.setState({tableData: data, selectedCard: data[0]});
   }
 
   render () {
@@ -43,7 +43,7 @@ class App extends Component {
         <div>
           <Header/>
           <Card selectedCard={selectedCard}/>
-          <Table tableData = {tableData} onClickNewItem={this.showForm} handleItemClick={this.handleItemClick}/>
+          <Table selectedCard={selectedCard} tableData = {tableData} onClickNewItem={this.showForm} handleItemClick={this.handleItemClick}/>
         </div>
       );
     }else{
