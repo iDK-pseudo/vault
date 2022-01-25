@@ -40,7 +40,6 @@
 .btn.submit{
     float: left;
     background: rgba(64, 235, 30, 0.411);
-    border-right: 1px solid white;
 }
 
 .btn.back {

@@ -9,9 +9,10 @@
 }
 
 @font-face {
-    font-family: BebasR;
-    src: url(./static/BebasNeue-Regular.ttf);
+    font-family: Ignite;
+    src: url(./static/Ignite.otf);
 }
+
 body {
     background-color: #121212;
     color: white;

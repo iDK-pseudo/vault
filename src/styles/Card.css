@@ -2,20 +2,22 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    margin-top: 20%;
-    height: 20vh;
+    margin-top: 10%;
+    height: 25vh;
     width: 78vw;
     padding: 5%;
-    font-size: 18px;
-    font-weight: bold;
-    font-family: BebasR;
+    font-family: Ignite;
     border-radius: 10px;
     color: white;
-    background-color: #485461;
-    background-image: linear-gradient(315deg, #485461 0%, #28313b 74%);
+    background-color: #3f0d12;
+    background-image: linear-gradient(315deg, #3f0d12 0%, #a71d31 74%);
 }
 
-.bank-logo {
+.logo-wrapper {
+    height: 30px;
+}
+
+.logo {
     height: auto;
     width: 10%;
 }
@@ -28,12 +30,12 @@
 }
 
 .card-detail-title {
-    font-weight: lighter;
+    font-size: 18px;
 }
 
 .card-number {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 5px;
-    font-size: 42px;
+    font-size: 40px;
+    transform: scale(1,1.5);
 }
