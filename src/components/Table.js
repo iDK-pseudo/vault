@@ -40,7 +40,7 @@ function Table (props) {
                 <thead>
                     <tr className="header-row">
                         <th>Bank</th>
-                        <th>Last 4 Digits</th>
+                        <th>Last 4</th>
                     </tr>
                 </thead>
                 <tbody>
