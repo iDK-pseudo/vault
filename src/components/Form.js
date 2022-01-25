@@ -50,7 +50,7 @@ class Form extends Component{
     render () {
         return (
             <div>
-                <form className="card-details-form" onSubmit={this.handleSubmit}>
+                <form className="card-details-form">
                     <label> Bank </label>
                     <input className={this.state.bank.showError ? 'error' : ''} name="bank" type="text" value={this.state.bank.value} onChange={this.handleChange}/>
                     <p className="error-msg">{this.state.bank.errorMsg}</p> 
@@ -62,10 +62,10 @@ class Form extends Component{
                     <p className="error-msg">{this.state.expires.errorMsg}</p> 
                     <label> CVV </label>
                     <input className={this.state.cvv.showError ? 'error' : ''} name="cvv" type="text" value={this.state.cvv.value} onChange={this.handleChange}/>
-                    <p className="error-msg">{this.state.cvv.errorMsg}</p> 
-                    <button type="submit"> + </button>
+                    <p className="error-msg">{this.state.cvv.errorMsg}</p>      
                 </form>
-                <button className='back-button' onClick={this.props.handleBackClick}>Back</button>
+                <button className='btn submit' type="submit" onClick={this.handleSubmit}> Add </button>
+                <button className='btn back' onClick={this.props.handleBackClick}>Cancel</button>
             </div>
         )
     }
