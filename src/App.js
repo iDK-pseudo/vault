@@ -3,37 +3,58 @@ import Card from './components/Card.js';
 import Header from './components/Header.js';
 import Table from './components/Table.js';
 import Form from './components/Form.js';
-import React, { useState } from 'react';
+import React, { Component } from 'react';
 
-function App() {
+class App extends Component {
 
-  const [displayForm, setDisplayForm] = useState(false);
-
-  function showForm () {
-    setDisplayForm(true);
+  constructor (props) {
+    super(props);
+    this.state = {
+      displayForm : false,
+      selectedCard : 0,
+      tableData: []
+    }
   }
 
-  function hideForm() {
-    setDisplayForm(false);
+  showForm = () => {
+    this.setState({displayForm: true});
   }
 
-  if(!displayForm){
-    return (
-      <div>
-        <Header/>
-        <Card/>
-        <Table onClickNewItem={showForm}/>
-      </div>
-    );
-  }else{
-    return (
-      <div>
-        <Header/>
-        <Form onNewEntrySuccess={hideForm} handleBackClick={hideForm}/>
-      </div>
-    )
+  hideForm = () => {
+    this.setState({displayForm: false});
   }
-  
+
+  handleItemClick = (e) => {
+    const id = e.currentTarget.getAttribute("data-id");
+    this.setState({selectedCard: this.state.tableData.find(e=>e._id===id)});
+  }
+
+  componentDidMount = async () => {
+    const response = await fetch('/api');
+    const data = await response.json();
+    this.setState({tableData: data});
+  }
+
+  render () {
+    const {displayForm, selectedCard, tableData} = this.state;
+
+    if(!displayForm){
+      return (
+        <div>
+          <Header/>
+          <Card selectedCard={selectedCard}/>
+          <Table tableData = {tableData} onClickNewItem={this.showForm} handleItemClick={this.handleItemClick}/>
+        </div>
+      );
+    }else{
+      return (
+        <div>
+          <Header/>
+          <Form onNewEntrySuccess={this.hideForm} handleBackClick={this.hideForm}/>
+        </div>
+      )
+    }
+  }
 }
 
 export default App;

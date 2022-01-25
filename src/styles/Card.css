@@ -4,8 +4,8 @@
     justify-content: space-between;
     margin-top: 20%;
     height: 20vh;
-    width: 70vw;
-    padding: 7%;
+    width: 78vw;
+    padding: 5%;
     font-size: 18px;
     font-weight: bold;
     border-radius: 10px;
@@ -32,7 +32,8 @@
 }
 
 .card-number {
-    display: flex;
-    justify-content: space-between;
-    font-size: 30px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    font-size: 28px;
 }

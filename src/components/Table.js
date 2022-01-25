@@ -4,35 +4,30 @@ import { useState, useEffect } from 'react';
 function Table (props) {
 
     const [entries, setEntries] = useState([]);
-    const [dataFetched, setDataFetched] = useState(false);
+    const [dataPresent, setDataPresent] = useState(false);
 
     useEffect(() => {
-        const fetchData = async () => {
-            const response = await fetch('/api');
-            const data = await response.json();
-            const modifiedEntries = data.map((eachEntry)=>{
+        if(props.tableData.length){
+            const modifiedEntries = props.tableData.map((eachEntry)=>{
                 return ( 
-                    <tr key={eachEntry._id} className='data-row'>
+                    <tr key={eachEntry._id} className='data-row' data-id={eachEntry._id} onClick={props.handleItemClick}>
                         <td> {eachEntry.bank} </td>
-                        <td> {eachEntry.cardnum.slice(-4)} </td>
-                        <td> {eachEntry.expires} </td>
+                        <td> {eachEntry.cardnum.slice(-4)} </td> 
                     </tr>
                 )
             })
             setEntries(modifiedEntries);
-            setDataFetched(true);
-        };
-        fetchData();
-    }, []);
+            setDataPresent(true);
+        }
+    },[props.tableData]);
 
-    if(!dataFetched){
+    if(!dataPresent){
         return (
             <table className="table">
                 <thead>
                     <tr className="header-row">
                         <th>Bank</th>
                         <th>Last 4 Digits</th>
-                        <th>Expires</th>
                     </tr>
                 </thead>
             </table>
@@ -46,7 +41,6 @@ function Table (props) {
                     <tr className="header-row">
                         <th>Bank</th>
                         <th>Last 4 Digits</th>
-                        <th>Expires</th>
                     </tr>
                 </thead>
                 <tbody>
