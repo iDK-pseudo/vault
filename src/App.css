@@ -8,6 +8,10 @@
     src: url(./static/Roboto-Light.ttf);
 }
 
+@font-face {
+    font-family: BebasR;
+    src: url(./static/BebasNeue-Regular.ttf);
+}
 body {
     background-color: #121212;
     color: white;
