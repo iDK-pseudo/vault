@@ -3,10 +3,13 @@ const { body, check, validationResult } = require('express-validator');
 var bodyParser = require('body-parser');
 const { MongoClient } = require("mongodb");
 const path = require("path");
+require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
 
 const app = express();
+
+const MONGODB_URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@firstcluster.kxtke.mongodb.net/myFirstDatabase?retryWrites=true&w=majority&ssl=true`;
 
 app.use(bodyParser.json());       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -51,8 +54,7 @@ app.listen(PORT, () => {
 });
 
 writeToDB = async (data) =>{
-  const uri = "mongodb+srv://shivam:shivam1999@firstcluster.kxtke.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
-  const client = new MongoClient(uri);
+  const client = new MongoClient(MONGODB_URI);
   try {
     await client.connect();
     const database = client.db('banking');
@@ -65,8 +67,7 @@ writeToDB = async (data) =>{
 }
 
 readEntriesFromDB = async () => {
-  const uri = "mongodb+srv://shivam:shivam1999@firstcluster.kxtke.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
-  const client = new MongoClient(uri);
+  const client = new MongoClient(MONGODB_URI);
   try {
     await client.connect();
     const database = client.db('banking');
