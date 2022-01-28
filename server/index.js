@@ -72,7 +72,15 @@ readEntriesFromDB = async () => {
     await client.connect();
     const database = client.db('banking');
     const cardData = database.collection('cardData');
-    const result = await cardData.find().toArray();
+    let result = await cardData.find().toArray();
+    if(result.length === 0){
+      result = [
+        {
+          bank: "-",
+          cardnum: "-"
+        }
+      ]
+    }
     return result;
   } finally {
     await client.close();

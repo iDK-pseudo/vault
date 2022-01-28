@@ -16,9 +16,19 @@ class Form extends Component{
     handleChange = (e) => {
         switch(e.target.name) {
             case 'bank': this.setState({bank: {value: e.target.value, showError: false}}); break;
-            case 'cardnum': this.setState({cardnum: {value: e.target.value, showError: false}}); break;
+            case 'cardnum': 
+                let finalVal = e.target.value;
+                if(e.target.value.length>19) return;
+                if(e.target.value.length<19 && e.target.value.replaceAll('-','').length%4 === 0)
+                    if(e.nativeEvent.inputType.includes('insert'))
+                        finalVal+='-';
+                    else if(e.nativeEvent.inputType.includes('delete'))
+                        finalVal = finalVal.substring(0,finalVal.length-1);
+                this.setState({cardnum: {value: finalVal, showError: false}}); break;
             case 'expires': this.setState({expires: {value: e.target.value, showError: false}}); break;
-            case 'cvv': this.setState({cvv: {value: e.target.value, showError: false}}); break;
+            case 'cvv': 
+                if(e.target.value.length === 4) return;
+                this.setState({cvv: {value: e.target.value, showError: false}}); break;
         }
     }
 
@@ -42,7 +52,10 @@ class Form extends Component{
     generatePayload = (state) => {
         let payload = {}
         for(const [key, value] of Object.entries(state)){
-            payload[key] = value.value;
+            if(key === 'cardnum')
+                payload[key] = value.value.replaceAll('-','');
+            else
+                payload[key] = value.value;
         }
         return payload;
     }
@@ -55,7 +68,7 @@ class Form extends Component{
                     <input className={this.state.bank.showError ? 'error' : ''} name="bank" type="text" value={this.state.bank.value} onChange={this.handleChange}/>
                     <p className="error-msg">{this.state.bank.errorMsg}</p> 
                     <label> Card Number </label>
-                    <input className={this.state.cardnum.showError ? 'error' : ''} name="cardnum" type="number" value={this.state.cardnum.value} onChange={this.handleChange}/>
+                    <input className={this.state.cardnum.showError ? 'error' : ''} pattern = '[0-9\-]+' name="cardnum" type="tel" value={this.state.cardnum.value} onChange={this.handleChange}/>
                     <p className="error-msg">{this.state.cardnum.errorMsg}</p> 
                     <label> Expires </label>
                     <input className={this.state.expires.showError ? 'error' : ''} name="expires" type="month" onChange={this.handleChange}/>
