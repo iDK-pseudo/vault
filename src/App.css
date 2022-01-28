@@ -1,9 +1,4 @@
 @font-face {
-    font-family: NotoSans;
-    src: url(./static/NotoSans-Regular.ttf);
-}
-
-@font-face {
     font-family: Saira;
     src: url(./static/SairaCondensed-Regular.ttf);
 }
@@ -17,8 +12,11 @@ body {
     background-color: #121212;
     color: white;
     font-size: 24px;
-    font-family: NotoSans;
-    padding: 10% 7%;
+    font-family: Ignite;
+    padding: 8% 7%;
     overflow-y: hidden;
 }
 
+header {
+    font-size: 35px;
+}

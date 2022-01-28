@@ -1,4 +1,5 @@
 import './App.css';
+import Welcome from './components/Welcome.js';
 import Card from './components/Card.js';
 import Header from './components/Header.js';
 import Table from './components/Table.js';
@@ -10,18 +11,18 @@ class App extends Component {
   constructor (props) {
     super(props);
     this.state = {
-      displayForm : false,
+      display : 'welcome',
       selectedCard : 0,
       tableData: []
     }
   }
 
   showForm = () => {
-    this.setState({displayForm: true});
+    this.setState({display: 'form'});
   }
 
   hideForm = () => {
-    this.setState({displayForm: false});
+    this.setState({display: 'homepage'});
   }
 
   handleItemClick = (e) => {
@@ -36,23 +37,30 @@ class App extends Component {
   }
 
   render () {
-    const {displayForm, selectedCard, tableData} = this.state;
-
-    if(!displayForm){
-      return (
-        <div>
-          <Header/>
-          <Card selectedCard={selectedCard}/>
-          <Table selectedCard={selectedCard} tableData = {tableData} onClickNewItem={this.showForm} handleItemClick={this.handleItemClick}/>
-        </div>
-      );
-    }else{
-      return (
-        <div>
-          <Header/>
-          <Form onNewEntrySuccess={this.hideForm} handleBackClick={this.hideForm}/>
-        </div>
-      )
+    const {display, selectedCard, tableData} = this.state;
+    switch(display){
+      case 'welcome':
+        return (
+          <div>
+            <Header/>
+            <Welcome/>
+          </div>
+        )
+      case 'homepage': 
+        return (
+          <div>
+            <Header/>
+            <Card selectedCard={selectedCard}/>
+            <Table selectedCard={selectedCard} tableData = {tableData} onClickNewItem={this.showForm} handleItemClick={this.handleItemClick}/>
+          </div>
+        );
+      case 'form':
+        return (
+          <div>
+            <Header/>
+            <Form onNewEntrySuccess={this.hideForm} handleBackClick={this.hideForm}/>
+          </div>
+        )
     }
   }
 }
