@@ -30,7 +30,7 @@
     background: #980F5A;
 }
 
-.sign-up-link {
+.link {
     position: absolute;
     left: 20%;
     bottom: 5%;
@@ -38,7 +38,11 @@
     font-size: 22px;
 }
 
-.sign-up-link a {
+.link a {
     font-weight: bolder;
     color: #980F5A;
+}
+
+input.error {
+    border: 2px solid #a72525e1;
 }
