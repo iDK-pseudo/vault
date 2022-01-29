@@ -1,8 +1,11 @@
 const express = require("express");
 const { body, check, validationResult } = require('express-validator');
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 const { MongoClient } = require("mongodb");
 const path = require("path");
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const crypto = require('crypto');
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
@@ -15,6 +18,71 @@ app.use(bodyParser.json());       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
+
+
+passport.use(new LocalStrategy(verify = async (username, password, cb) => {
+    const client = new MongoClient(MONGODB_URI);
+    try {
+      await client.connect();
+      const database = client.db('banking');
+      const userdata = database.collection('userdata');
+      const result = await userdata.findOne({username: username});
+      crypto.pbkdf2(password, 'salt', 310000, 32, 'sha256', (err, hashedPassword) => {
+        if(!result) return cb(null, false, { message: 'Incorrect username or password.' });
+        const bufferedPass = Buffer.from(result.password.data);
+        if (Buffer.isBuffer(bufferedPass) && !crypto.timingSafeEqual(bufferedPass, hashedPassword)) {
+          return cb(null, false, { message: 'Incorrect username or password.' });
+        }else{
+          return cb(null, username);
+        }
+      });
+    } finally {
+      await client.close();
+    }
+}));
+
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
+
+app.post('/login',
+  function(req, res,next) {
+    passport.authenticate('local', (err, user, options)=>{
+      if(user){
+        res.send({success:true});
+      }else{
+        res.send({success:false, ...options});
+      }
+    })(req,res,next);
+  }
+);
+
+app.post('/signup',
+  check('username').isLength({min: 0}).trim().escape(),
+  check('password').isLength({min: 0}).trim().escape(),
+  async (req,res) => {
+    const errorsResult = validationResult(req);
+    if(errorsResult.isEmpty()){
+      crypto.pbkdf2Sync(req.body.password, 'salt', 310000, 32, 'sha256', async (err, hashedPassword) => {
+        const client = new MongoClient(MONGODB_URI);
+        try {
+          await client.connect();
+          const database = client.db('banking');
+          const userdata = database.collection('userdata');
+          const result = await userdata.insertOne({_id: req.body.username, username: req.body.username, password: hashedPassword.toJSON()});
+          console.log(`A user was inserted with the _id: ${result.insertedId}`);
+        } finally {
+          await client.close();
+          res.send("success");
+        }
+      });
+    }
+  }
+)
 
 app.post("/api", 
   body('bank','Bank must be non-empty, contain only Alphabets, Numbers').isAlphanumeric('en-US',{ignore: ' '}).trim(),
@@ -42,6 +110,7 @@ app.get('/api',
     res.send(entries);
   }
 )
+
 
 app.use(express.static(path.join(__dirname, "../build/")));
 
