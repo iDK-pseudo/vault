@@ -20,20 +20,20 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 })); 
 
 
-passport.use(new LocalStrategy(verify = async (username, password, cb) => {
+passport.use(new LocalStrategy(verify = async (email, password, cb) => {
     const client = new MongoClient(MONGODB_URI);
     try {
       await client.connect();
       const database = client.db('banking');
       const userdata = database.collection('userdata');
-      const result = await userdata.findOne({username: username});
-      crypto.pbkdf2(password, 'salt', 310000, 32, 'sha256', (err, hashedPassword) => {
-        if(!result) return cb(null, false, { message: 'Incorrect username or password.' });
+      const result = await userdata.findOne({email: email});
+      crypto.pbkdf2(password, process.env.USER_SALT, 310000, 32, 'sha256', (err, hashedPassword) => {
+        if(!result) return cb(null, false, { message: 'Incorrect email or password.' });
         const bufferedPass = Buffer.from(result.password.data);
         if (Buffer.isBuffer(bufferedPass) && !crypto.timingSafeEqual(bufferedPass, hashedPassword)) {
-          return cb(null, false, { message: 'Incorrect username or password.' });
+          return cb(null, false, { message: 'Incorrect email or password.' });
         }else{
-          return cb(null, username);
+          return cb(null, email);
         }
       });
     } finally {
@@ -62,24 +62,29 @@ app.post('/login',
 );
 
 app.post('/signup',
-  check('username').isLength({min: 0}).trim().escape(),
-  check('password').isLength({min: 0}).trim().escape(),
-  async (req,res) => {
+  check('email','Please enter valid email').isEmail().normalizeEmail().trim().escape(),
+  check('password','Password must contain atleast 8 chars, 1 Lowercase, 1 Uppercase, 1 Number, 1 Special Character')
+    .isStrongPassword()
+    .trim()
+    .escape(),
+  (req,res) => {
     const errorsResult = validationResult(req);
     if(errorsResult.isEmpty()){
-      crypto.pbkdf2Sync(req.body.password, 'salt', 310000, 32, 'sha256', async (err, hashedPassword) => {
+      crypto.pbkdf2(req.body.password, process.env.USER_SALT, 310000, 32, 'sha256', async (err, hashedPassword) => {
         const client = new MongoClient(MONGODB_URI);
         try {
           await client.connect();
           const database = client.db('banking');
           const userdata = database.collection('userdata');
-          const result = await userdata.insertOne({_id: req.body.username, username: req.body.username, password: hashedPassword.toJSON()});
+          const result = await userdata.insertOne({_id: req.body.email, email: req.body.email, password: hashedPassword.toJSON()});
           console.log(`A user was inserted with the _id: ${result.insertedId}`);
         } finally {
           await client.close();
-          res.send("success");
+          res.send({success: true});
         }
       });
+    }else{
+      res.send({success: false, ...errorsResult});
     }
   }
 )
