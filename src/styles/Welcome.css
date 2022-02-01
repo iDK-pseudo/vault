@@ -1,7 +1,7 @@
 .welcome-form {
     display: flex;
     flex-direction: column;
-    margin-top: 40%;
+    margin-top: 30%;
     width: 90%;
     font-family: Ignite;
 }
@@ -35,7 +35,7 @@
     left: 20%;
     bottom: 5%;
     font-family: Saira;
-    font-size: 22px;
+    font-size: 20px;
 }
 
 .link a {
@@ -45,4 +45,28 @@
 
 input.error {
     border: 2px solid #a72525e1;
+}
+
+.incorrect-msg {
+    visibility: hidden;
+    margin-top: 10%;
+    font-size: 20px;
+    color: #a72525e1;
+}
+
+.incorrect-msg.visible {
+    visibility: visible;
+}
+
+.error-list {
+    margin-top: 5%;
+    width: 90vw;
+    font-size: 18px;
+    font-family: Saira;
+    color: wheat;
+    list-style-type: disc;
+}
+
+.error-list li {
+    margin-top: 4%;
 }

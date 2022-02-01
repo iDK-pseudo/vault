@@ -25,6 +25,10 @@ class App extends Component {
     this.setState({display: 'homepage'});
   }
 
+  showHomepage = () => {
+    this.setState({display: 'homepage'});
+  }
+
   handleItemClick = (e) => {
     const id = e.currentTarget.getAttribute("data-id");
     this.setState({selectedCard: this.state.tableData.find(e=>e._id===id)});
@@ -43,7 +47,7 @@ class App extends Component {
         return (
           <div>
             <Header/>
-            <Welcome/>
+            <Welcome handleLoginSuccess={this.showHomepage}/>
           </div>
         )
       case 'homepage': 
