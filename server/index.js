@@ -6,6 +6,8 @@ const path = require("path");
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const crypto = require('crypto');
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
@@ -19,6 +21,17 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
 
+app.use(session({
+  secret: process.env.USER_SALT,
+  resave: false,
+  saveUninitialized: true,
+  store: MongoStore.create({ mongoUrl: MONGODB_URI }),
+  cookie: { secure: false }
+}))
+
+app.use(passport.initialize());
+
+app.use(passport.session());
 
 passport.use(new LocalStrategy(verify = async (email, password, cb) => {
     const client = new MongoClient(MONGODB_URI);
@@ -41,6 +54,7 @@ passport.use(new LocalStrategy(verify = async (email, password, cb) => {
     }
 }));
 
+
 passport.serializeUser(function(user, done) {
   done(null, user);
 });
@@ -53,6 +67,8 @@ app.post('/login',
   function(req, res,next) {
     passport.authenticate('local', (err, user, options)=>{
       if(user){
+        req.logIn(user, (err)=>{
+        });
         res.send({success:true});
       }else{
         res.send({success:false, ...options});
@@ -116,6 +132,16 @@ app.get('/api',
   }
 )
 
+app.get('/user',
+  async (req,res) => {
+    if(req.user){
+      const entries = await readEntriesFromDB();
+      res.send({isLoggedIn: true, entries});
+    }else{
+      res.send({isLoggedIn: false});
+    }
+  }
+)
 
 app.use(express.static(path.join(__dirname, "../build/")));
 
