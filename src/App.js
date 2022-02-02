@@ -11,7 +11,7 @@ class App extends Component {
   constructor (props) {
     super(props);
     this.state = {
-      display : 'welcome',
+      display : 'rendering',
       selectedCard : 0,
       tableData: []
     }
@@ -35,14 +35,26 @@ class App extends Component {
   }
 
   componentDidMount = async () => {
-    const response = await fetch('/api');
+    const response = await fetch('/user');
     const data = await response.json();
-    this.setState({tableData: data, selectedCard: data[0]});
+    if(data.isLoggedIn){
+      this.setState({display:'homepage',tableData: data.entries, selectedCard: data.entries[0]});
+    }else{
+      this.setState({display:'welcome'});
+    }
+    
   }
 
   render () {
     const {display, selectedCard, tableData} = this.state;
     switch(display){
+      case 'rendering':
+        return (
+          <div>
+            <Header/>
+            <div class="loader"></div>
+          </div>
+        )
       case 'welcome':
         return (
           <div>
