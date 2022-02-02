@@ -25,8 +25,14 @@ class App extends Component {
     this.setState({display: 'homepage'});
   }
 
-  showHomepage = () => {
-    this.setState({display: 'homepage'});
+  showHomepage = async () => {
+    const response = await fetch('/api');
+    const data = await response.json();
+    if(data.success){
+      this.setState({display:'homepage',tableData: data.entries, selectedCard: data.entries[0]});
+    }else{
+      this.setState({display:'welcome'});
+    }
   }
 
   handleItemClick = (e) => {

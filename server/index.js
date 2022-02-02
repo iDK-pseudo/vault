@@ -127,8 +127,12 @@ app.post("/api",
 
 app.get('/api',
   async (req,res) => {
-    const entries = await readEntriesFromDB();
-    res.send(entries);
+    if(req.user){
+      const entries = await readEntriesFromDB();
+      res.send({success:true, entries});
+    }else {
+      res.send({sucess: false});
+    }
   }
 )
 
