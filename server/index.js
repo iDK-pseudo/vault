@@ -37,19 +37,18 @@ app.use(passport.initialize());
 
 app.use(passport.session());
 
-passport.use(new LocalStrategy(verify = async (email, password, cb) => {
-    const result = await User.findOne({email: email});
-    crypto.pbkdf2(password, process.env.USER_SALT, 310000, 32, 'sha256', (err, hashedPassword) => {
-      if(!result) return cb(null, false, { message: 'Incorrect email or password.' });
-      const bufferedPass = Buffer.from(result.password.data);
-      if (Buffer.isBuffer(bufferedPass) && !crypto.timingSafeEqual(bufferedPass, hashedPassword)) {
+passport.use(new LocalStrategy(async (email, password, cb) => {
+    const foundUser = await User.findOne({email: email});
+    if(!foundUser) return cb(null, false, { message: 'Incorrect email or password.' });
+    crypto.pbkdf2(password, Buffer.from(foundUser.buf), 310000, 32, 'sha256', (err, hashedPassword) => {
+      const bufferedPass = Buffer.from(foundUser.password);
+      if (!crypto.timingSafeEqual(bufferedPass, hashedPassword)) {
         return cb(null, false, { message: 'Incorrect email or password.' });
       }else{
         return cb(null, email);
       }
     });
 }));
-
 
 passport.serializeUser(function(user, done) {
   done(null, user);
@@ -79,26 +78,27 @@ app.post('/signup',
     .isStrongPassword()
     .trim()
     .escape(),
-  (req,res) => {
+  async (req,res) => {
     const errorsResult = validationResult(req);
     if(errorsResult.isEmpty()){
-      crypto.pbkdf2(req.body.password, process.env.USER_SALT, 310000, 32, 'sha256', async (err, hashedPassword) => {
-        try {
-          const mongoRes = await User.create({
-            _id: req.body.email,
-            email: req.body.email, 
-            password: hashedPassword.toJSON()
-          })
-          console.log(`A user was inserted with the _id: ${mongoRes._id}`);
-          res.send({success: true});
-        }catch (ex){
-          if(ex.errmsg.includes('duplicate')){
-            res.send({success: false, errors: [{ param: 'duplicate-email', msg: 'User already exists'}]})
-          }else{
-            res.send({success: false, errors: [{ param: 'server-issue', msg: 'Server issue'}]});
-          }
+      const buf =  crypto.randomBytes(32);
+      const hashedPassword = crypto.pbkdf2Sync(req.body.password, buf, 310000, 32, 'sha256');
+      try {
+        const mongoRes = await User.create({
+          _id: req.body.email,
+          email: req.body.email, 
+          password: hashedPassword.toJSON().data,
+          buf: buf.toJSON().data
+        })
+        console.log(`A user was inserted with the _id: ${mongoRes._id}`);
+        res.send({success: true});
+      }catch (ex){
+        if(ex.errmsg.includes('duplicate')){
+          res.send({success: false, errors: [{ param: 'duplicate-email', msg: 'User already exists'}]})
+        }else{
+          res.send({success: false, errors: [{ param: 'server-issue', msg: 'Server issue'}]});
         }
-      });
+      }
     }else{
       res.send({success: false, ...errorsResult});
     }
