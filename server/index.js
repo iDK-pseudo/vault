@@ -10,7 +10,10 @@ const MongoStore = require('connect-mongo');
 const mongoose = require('mongoose');
 const User = require('./models/user');
 const Card = require('./models/card');
+const isAuth = require('./routes/authMiddleware').isAuth;
 require('dotenv').config();
+
+
 const PORT = process.env.PORT || 3000;
 const app = express();
 const MONGODB_URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@firstcluster.kxtke.mongodb.net/myFirstDatabase?retryWrites=true&w=majority&ssl=true`;
@@ -102,7 +105,7 @@ app.post('/signup',
   }
 )
 
-app.post("/api", 
+app.post("/api", isAuth,
   body('bank','Bank must be non-empty, contain only Alphabets, Numbers').isAlphanumeric('en-US',{ignore: ' '}).trim(),
   check('cardnum', 'Card number must be 16 Characters long').isNumeric().isLength({min: 16, max: 16}).trim().escape(),
   check('expires','Please enter a valid Month-Year').not().isEmpty(),
@@ -123,9 +126,8 @@ app.post("/api",
   }
 );
 
-app.get('/user',
+app.get('/cards', isAuth,
   async (req,res) => {
-    if(req.user){
       let entries = await Card.find({user: req.user});
       if(entries.length === 0){
         entries = [
@@ -135,12 +137,18 @@ app.get('/user',
           }
         ]
       }
-      res.send({isLoggedIn: true, entries});
+      res.send({entries});
+  }
+)
+
+app.get('/verify', 
+  (req, res)=> {
+    if(req.isAuthenticated()){
+      res.send({isLoggedIn: true});
     }else{
       res.send({isLoggedIn: false});
     }
-  }
-)
+  })
 
 app.use(express.static(path.join(__dirname, "../build/")));
 
