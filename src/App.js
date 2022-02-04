@@ -25,14 +25,10 @@ class App extends Component {
     this.setState({display: 'homepage'});
   }
 
-  showHomepage = async () => {
-    const response = await fetch('/api');
+  handleLoginSuccess = async () => {
+    const response = await fetch('/cards');
     const data = await response.json();
-    if(data.success){
-      this.setState({display:'homepage',tableData: data.entries, selectedCard: data.entries[0]});
-    }else{
-      this.setState({display:'welcome'});
-    }
+    this.setState({display:'homepage',tableData: data.entries, selectedCard: data.entries[0]});
   }
 
   handleItemClick = (e) => {
@@ -41,14 +37,15 @@ class App extends Component {
   }
 
   componentDidMount = async () => {
-    const response = await fetch('/user');
-    const data = await response.json();
-    if(data.isLoggedIn){
-      this.setState({display:'homepage',tableData: data.entries, selectedCard: data.entries[0]});
-    }else{
+    let response = await fetch('/verify');
+    let data = await response.json();
+    if(!data.isLoggedIn){
       this.setState({display:'welcome'});
+    }else{
+      response = await fetch('/cards');
+      data = await response.json();
+      this.setState({display:'homepage',tableData: data.entries, selectedCard: data.entries[0]});
     }
-    
   }
 
   render () {
@@ -65,7 +62,7 @@ class App extends Component {
         return (
           <div>
             <Header/>
-            <Welcome handleLoginSuccess={this.showHomepage}/>
+            <Welcome handleLoginSuccess={this.handleLoginSuccess}/>
           </div>
         )
       case 'homepage': 
