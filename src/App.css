@@ -18,7 +18,20 @@ body {
 }
 
 header {
+    display: flex;
+    justify-content: space-between;
     font-size: 35px;
+}
+
+header button {
+    width: 20%;
+    height: 4vh;
+    border: 0;
+    font-size: 15px;
+    font-family: Saira;
+    font-weight: bolder;
+    color: white;
+    background: #332f31;
 }
 
 .loader {

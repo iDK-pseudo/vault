@@ -108,6 +108,12 @@ app.post('/signup',
   }
 )
 
+app.post('/logout', isAuth,
+  (req, res)=> {
+    req.logout();
+    res.send({loggedOut: true});
+  })
+
 app.post("/api", isAuth,
   body('bank','Bank must be non-empty, contain only Alphabets, Numbers').isAlphanumeric('en-US',{ignore: ' '}).trim(),
   check('cardnum', 'Card number must be 16 Characters long').isNumeric().isLength({min: 16, max: 16}).trim().escape(),

@@ -31,6 +31,14 @@ class App extends Component {
     this.setState({display:'homepage',tableData: data.entries, selectedCard: data.entries[0]});
   }
 
+  handleLogout = async () => {
+    const response = await fetch('/logout',{method: 'POST'});
+    const data = await response.json();
+    if(data.loggedOut){
+        this.setState({display: 'welcome'})
+    } 
+  }   
+
   handleItemClick = (e) => {
     const id = e.currentTarget.getAttribute("data-id");
     this.setState({selectedCard: this.state.tableData.find(e=>e._id===id)});
@@ -54,21 +62,21 @@ class App extends Component {
       case 'rendering':
         return (
           <div>
-            <Header/>
+            <Header handleLogout={this.handleLogout} display={this.state.display}/>
             <div class="loader"></div>
           </div>
         )
       case 'welcome':
         return (
           <div>
-            <Header/>
+            <Header handleLogout={this.handleLogout} display={this.state.display}/>
             <Welcome handleLoginSuccess={this.handleLoginSuccess}/>
           </div>
         )
       case 'homepage': 
         return (
           <div>
-            <Header/>
+            <Header handleLogout={this.handleLogout} display={this.state.display}/>
             <Card selectedCard={selectedCard}/>
             <Table selectedCard={selectedCard} tableData = {tableData} onClickNewItem={this.showForm} handleItemClick={this.handleItemClick}/>
           </div>
@@ -76,7 +84,7 @@ class App extends Component {
       case 'form':
         return (
           <div>
-            <Header/>
+            <Header handleLogout={this.handleLogout} display={this.state.display}/>
             <Form onNewEntrySuccess={this.hideForm} handleBackClick={this.hideForm}/>
           </div>
         )
