@@ -30,15 +30,15 @@
     background: #980F5A;
 }
 
-.link {
+.footer {
     position: absolute;
     left: 20%;
-    bottom: 5%;
+    bottom: 10%;
     font-family: Saira;
     font-size: 20px;
 }
 
-.link a {
+.footer a {
     font-weight: bolder;
     color: #980F5A;
 }

@@ -9,6 +9,8 @@
 }
 
 body {
+    position: relative;
+    min-height: 90vh;
     background-color: #121212;
     color: white;
     font-size: 24px;

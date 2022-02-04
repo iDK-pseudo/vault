@@ -73,7 +73,7 @@ const Welcome = (props) => {
                     <input placeholder='Enter Password' type='password' value={password} onChange={(e)=>setPassword(e.target.value)}/>
                     <button className='login-btn' onClick={handleLogin}>{loginBtnText}</button>
                     <p className={showError ? 'incorrect-msg visible' : 'incorrect-msg'}>Incorrect Email or Password</p>
-                    <p className='link'>Don't have an account? 
+                    <p className='footer'>Don't have an account? 
                         <a 
                             onClick={()=>{
                                 setDisplay('signup');
@@ -106,7 +106,7 @@ const Welcome = (props) => {
                 <ul className='error-list'>
                     {errorList}
                 </ul>
-                <p className='link'>Already have an account ? 
+                <p className='footer'>Already have an account ? 
                     <a 
                         onClick={()=>{
                             setDisplay('login');
