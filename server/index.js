@@ -26,11 +26,14 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 })); 
 
 app.use(session({
-  secret: process.env.USER_SALT,
+  secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   store: MongoStore.create({ mongoUrl: MONGODB_URI }),
-  cookie: { secure: false }
+  cookie: { 
+    secure: false,
+    maxAge: 1000 * 60 * 60 * 24
+  }
 }))
 
 app.use(passport.initialize());
