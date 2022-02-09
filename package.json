@@ -14,7 +14,7 @@
     "web-vitals": "^2.1.2"
   },
   "scripts": {
-    "start-client": "react-scripts start",
+    "start-client": "set PORT=3001 && react-scripts start",
     "build": "react-scripts build && (cd server && npm install)",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
