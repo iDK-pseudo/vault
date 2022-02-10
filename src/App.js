@@ -2,9 +2,10 @@ import './App.css';
 import Welcome from './components/Welcome.js';
 import Card from './components/Card.js';
 import Header from './components/Header.js';
-import Table from './components/Table.js';
-import Form from './components/Form.js';
+import AddCardDrawer from './components/mui_components/AddCardDrawer.js';
 import React, { Component } from 'react';
+import BottomNav from './components/mui_components/BottomNav.js';
+import CardList from './components/mui_components/CardList.js';
 
 class App extends Component {
 
@@ -13,7 +14,8 @@ class App extends Component {
     this.state = {
       display : 'rendering',
       selectedCard : 0,
-      tableData: []
+      tableData: [], 
+      drawerOpen: false
     }
   }
 
@@ -48,7 +50,7 @@ class App extends Component {
     let response = await fetch('/verify');
     let data = await response.json();
     if(!data.isLoggedIn){
-      this.setState({display:'welcome'});
+      this.setState({display:'homepage'});
     }else{
       response = await fetch('/cards');
       data = await response.json();
@@ -63,7 +65,7 @@ class App extends Component {
         return (
           <div>
             <Header handleLogout={this.handleLogout} display={this.state.display}/>
-            <div class="loader"></div>
+            <div className="loader"></div>
           </div>
         )
       case 'welcome':
@@ -78,16 +80,11 @@ class App extends Component {
           <div>
             <Header handleLogout={this.handleLogout} display={this.state.display}/>
             <Card selectedCard={selectedCard}/>
-            <Table selectedCard={selectedCard} tableData = {tableData} onClickNewItem={this.showForm} handleItemClick={this.handleItemClick}/>
+            <CardList/>
+            <AddCardDrawer open={this.state.drawerOpen} handleDrawerClose={()=>this.setState({drawerOpen: false})}/>
+            <BottomNav handleAddCard={()=>this.setState({drawerOpen: true})}/>
           </div>
         );
-      case 'form':
-        return (
-          <div>
-            <Header handleLogout={this.handleLogout} display={this.state.display}/>
-            <Form onNewEntrySuccess={this.hideForm} handleBackClick={this.hideForm}/>
-          </div>
-        )
     }
   }
 }
