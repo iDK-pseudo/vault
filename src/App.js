@@ -58,6 +58,10 @@ class App extends Component {
     }
   }
 
+  handleAddNewCardSuccess = async () => {
+
+  }
+
   render () {
     const {display, selectedCard, tableData} = this.state;
     switch(display){
@@ -81,8 +85,14 @@ class App extends Component {
             <Header handleLogout={this.handleLogout} display={this.state.display}/>
             <Card selectedCard={selectedCard}/>
             <CardList/>
-            <AddCardDrawer open={this.state.drawerOpen} handleDrawerClose={()=>this.setState({drawerOpen: false})}/>
-            <BottomNav handleAddCard={()=>this.setState({drawerOpen: true})}/>
+            <AddCardDrawer 
+              open={this.state.drawerOpen} 
+              handleDrawerClose={()=>this.setState({drawerOpen: false})}
+              handleAddNewCardSuccess={this.handleAddNewCardSuccess}
+            />
+            <BottomNav 
+              handleAddCard={()=>this.setState({drawerOpen: true})}
+            />
           </div>
         );
     }

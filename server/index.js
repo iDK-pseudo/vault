@@ -115,20 +115,16 @@ app.post('/logout', isAuth,
   })
 
 app.post("/api", isAuth,
-  body('bank','Bank must be non-empty, contain only Alphabets, Numbers').isAlphanumeric('en-US',{ignore: ' '}).trim(),
-  check('cardnum', 'Card number must be 16 Characters long').isNumeric().isLength({min: 16, max: 16}).trim().escape(),
-  check('expires','Please enter a valid Month-Year').not().isEmpty(),
-  check('cvv','CVV must be 3 chars long').isNumeric().isLength({min: 3, max: 3}).trim().escape(),
+  check('cardnum', 'Please enter a valid Card Number').isCreditCard().trim().escape(),
+  check('month','Please enter a valid Month').matches(/\d{2}/).isInt({min: 01, max: 12}).trim().escape(),
+  check('year','Please enter a valid Year').matches(/\d{4}/).trim().escape(),
+  check('cvv','Please enter a valid CVV').matches(/^\d{3,4}$/).isInt().trim().escape(),
   async (req, res) => {
     const errorsResult = validationResult(req);
     if (!errorsResult.isEmpty()) {
-      const payload = {};
-      errorsResult.errors.forEach((error)=>{
-        payload[error.param] = {value: req.body[error.param], showError: true, errorMsg: error.msg};
-      })
-      res.send(payload);
+      res.send({success: false, errors: errorsResult.errors});
     }else{
-      const mongoRes = await Card.create(req.body);
+      const mongoRes = await Card.create({user: req.user, ...req.body});
       console.log(`A document was inserted with the _id: ${mongoRes._id}`);
       res.send({success: true});
     }
