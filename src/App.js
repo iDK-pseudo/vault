@@ -1,6 +1,6 @@
 import './App.css';
 import Welcome from './components/Welcome.js';
-import Card from './components/Card.js';
+import CreditCard from './components/mui_components/CreditCard.js';
 import Header from './components/Header.js';
 import AddCardDrawer from './components/mui_components/AddCardDrawer.js';
 import React, { Component } from 'react';
@@ -45,9 +45,9 @@ class App extends Component {
     } 
   }   
 
-  handleItemClick = (e) => {
+  handleCardListItemClick = (e) => {
     const id = e.currentTarget.getAttribute("data-id");
-    this.setState({selectedCard: this.state.tableData.find(e=>e._id===id)});
+    this.setState({selectedCard: this.state.cardList.find(e=>e._id===id)});
   }
 
   componentDidMount = async () => {
@@ -93,8 +93,8 @@ class App extends Component {
         return (
           <div>
             <Header handleLogout={this.handleLogout} display={this.state.display}/>
-            <Card selectedCard={selectedCard}/>
-            <CardList cardList={cardList}/>
+            <CreditCard card={selectedCard}/>
+            <CardList cardList={cardList} handleCardListItemClick={this.handleCardListItemClick}/>
             <AddCardDrawer 
               open={this.state.drawerOpen} 
               handleDrawerClose={()=>this.setState({drawerOpen: false})}

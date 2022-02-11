@@ -29,12 +29,14 @@ export default function CardList(props) {
 
         setCardList(props.cardList.map(each=>
             <ListItem disablePadding
-                key={each._id} 
+                key={each._id}
+                data-id={each._id} 
                 sx={{
                         backgroundColor: '#EBE3D5',
                         borderRadius: 2,
                         marginBottom: 1,
                     }}
+                onClick={props.handleCardListItemClick}
             >
                 <ListItemButton>
                     <ListItemIcon sx={{marginRight: "20px"}}>
