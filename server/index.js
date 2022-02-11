@@ -19,6 +19,8 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 const MONGODB_URI = `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@firstcluster-shard-00-00.kxtke.mongodb.net:27017,firstcluster-shard-00-01.kxtke.mongodb.net:27017,firstcluster-shard-00-02.kxtke.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-9qr6zu-shard-0&authSource=admin&retryWrites=true&w=majority`;
 
+let lastEnteredId = null;
+
 mongoose.connect(MONGODB_URI);
 
 app.use(bodyParser.json());       // to support JSON-encoded bodies
@@ -128,6 +130,7 @@ app.post("/api", isAuth,
     const isCvvValid = cardValidator.cvv(cvv).isValid;
     if (numberValid.isValid && isMonthValid && isYearValid && isCvvValid) {
       const mongoRes = await Card.create({user: req.user, ...req.body, cardType: numberValid.card.niceType});
+      lastEnteredId = mongoRes._id.toString();
       console.log(`A document was inserted with the _id: ${mongoRes._id}`);
       res.send({success: true});
     }else{
@@ -155,6 +158,13 @@ app.post("/api", isAuth,
     }
   }
 );
+
+app.get('/lastcard', isAuth,
+  async (req,res) => {
+      let entry = await Card.find({user: req.user, _id: lastEnteredId}).limit(1);
+      res.send({entry});
+  }
+)
 
 app.get('/cards', isAuth,
   async (req,res) => {

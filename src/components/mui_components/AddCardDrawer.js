@@ -29,6 +29,7 @@ function reducer (state, {name, event, showError}) {
             case 'cvv':     isValid = (event.nativeEvent.inputType.includes("insert") && state.cvv.value.length<3) || 
                                     (event.nativeEvent.inputType.includes("delete")&& state.cvv.value.length>0)
                             break;
+            case 'reset':   return {...initialState};
         default : return state;
     }
     if(isValid)
@@ -69,7 +70,8 @@ export default function AddCardDrawer(props) {
             errorSet.forEach(e=>dispatch({name: e, showError:true, event: null}))
         }else if(response.success){
             setLoading(false);
-            // props.handleAddNewCardSuccess();
+            dispatch({name: "reset", showError: false, event: null});
+            props.handleAddNewCardSuccess();
         }
         setLoading(false);
     }

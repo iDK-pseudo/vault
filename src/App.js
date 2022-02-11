@@ -6,6 +6,8 @@ import AddCardDrawer from './components/mui_components/AddCardDrawer.js';
 import React, { Component } from 'react';
 import BottomNav from './components/mui_components/BottomNav.js';
 import CardList from './components/mui_components/CardList.js';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 class App extends Component {
 
@@ -14,6 +16,7 @@ class App extends Component {
     this.state = {
       display : 'rendering',
       selectedCard : 0,
+      newCardSuccess: false,
       tableData: [],
       cardList: [], 
       drawerOpen: false
@@ -60,7 +63,13 @@ class App extends Component {
   }
 
   handleAddNewCardSuccess = async () => {
-
+    let response = await fetch('/lastcard');
+    let data = await response.json();
+    this.setState({
+      cardList: [...this.state.cardList, data.entry[0]],
+      newCardSuccess: true,
+      drawerOpen: false
+    })
   }
 
   render () {
@@ -91,6 +100,17 @@ class App extends Component {
               handleDrawerClose={()=>this.setState({drawerOpen: false})}
               handleAddNewCardSuccess={this.handleAddNewCardSuccess}
             />
+            <Snackbar
+              open={this.state.newCardSuccess}
+              autoHideDuration={2000}
+              onClose={()=>this.setState({newCardSuccess: false})}
+              message="Card Added"
+              sx={{justifyContent: 'center'}}
+            >
+              <Alert sx={{width: "50%", background: "#0C0D0B", color: 'white'}}>
+                Card Added
+              </Alert>
+            </Snackbar>
             <BottomNav 
               handleAddCard={()=>this.setState({drawerOpen: true})}
             />
