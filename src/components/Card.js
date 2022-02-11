@@ -6,6 +6,7 @@ function Card (props) {
     const [card, setCard] = useState({});
     const [logo, setLogo] = useState(null);
 
+    /*
     useEffect( async ()=>{
         const card = {};
         let useLogo = "", logoImg = "";
@@ -29,7 +30,7 @@ function Card (props) {
         setCard(card);
         setLogo(logoImg);
     },[props.selectedCard]);
-
+    */
     return (
         <div className="card">
             <div className="logo-wrapper">
