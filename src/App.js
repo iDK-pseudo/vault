@@ -14,7 +14,8 @@ class App extends Component {
     this.state = {
       display : 'rendering',
       selectedCard : 0,
-      tableData: [], 
+      tableData: [],
+      cardList: [], 
       drawerOpen: false
     }
   }
@@ -50,11 +51,11 @@ class App extends Component {
     let response = await fetch('/verify');
     let data = await response.json();
     if(!data.isLoggedIn){
-      this.setState({display:'homepage'});
+      this.setState({display:'welcome'});
     }else{
       response = await fetch('/cards');
       data = await response.json();
-      this.setState({display:'homepage',tableData: data.entries, selectedCard: data.entries[0]});
+      this.setState({display:'homepage',cardList: data.entries, selectedCard: data.entries[0]});
     }
   }
 
@@ -63,7 +64,7 @@ class App extends Component {
   }
 
   render () {
-    const {display, selectedCard, tableData} = this.state;
+    const {display, selectedCard, cardList} = this.state;
     switch(display){
       case 'rendering':
         return (
@@ -84,7 +85,7 @@ class App extends Component {
           <div>
             <Header handleLogout={this.handleLogout} display={this.state.display}/>
             <Card selectedCard={selectedCard}/>
-            <CardList/>
+            <CardList cardList={cardList}/>
             <AddCardDrawer 
               open={this.state.drawerOpen} 
               handleDrawerClose={()=>this.setState({drawerOpen: false})}

@@ -16,13 +16,13 @@ function Card (props) {
             card.cardnum4 = props.selectedCard.cardnum.slice(12,16);
             card.expires = props.selectedCard.expires.slice(5,7)+"/"+props.selectedCard.expires.slice(2,4);
             if(props.selectedCard.bank.includes("IDBI")){
-                useLogo = await import('../static/IDBI Logo.png');
+                // useLogo = await import('../static/IDBI Logo.png');
                 logoImg = <img className="logo" src={useLogo.default}/>
             }else if(props.selectedCard.bank.includes("HDFC")){
-                useLogo = await import('../static/HDFC Logo.jpg');
+                // useLogo = await import('../static/HDFC Logo.jpg');
                 logoImg = <img className="logo" src={useLogo.default}/>
             }else if(props.selectedCard.bank.includes("SBI")){
-                useLogo = await import('../static/SBI Logo.png');
+                // useLogo = await import('../static/SBI Logo.png');
                 logoImg = <img className="logo" src={useLogo.default}/>
             }
         }
