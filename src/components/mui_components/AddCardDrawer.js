@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useReducer, useState} from 'react'
 import Drawer from '@mui/material/Drawer';
 import Input from '@mui/material/Input';
 import InputLabel from '@mui/material/InputLabel';
@@ -10,75 +10,63 @@ import AddCardIcon from '@mui/icons-material/AddCard';
 import handleAddNewCardAPI from '../../api/APIUtils.js'
 import LoadingButton from '@mui/lab/LoadingButton';
 
+function reducer (state, {name, event, showError}) {
+    let isValid = false;
+
+    if(showError)
+        return {...state, [name]:{value: state[name].value, error: true}}
+
+    switch(name){
+            case 'cardnum': isValid = (event.nativeEvent.inputType.includes("insert") && state.cardnum.value.length<16) || 
+                                    (event.nativeEvent.inputType.includes("delete")&& state.cardnum.value.length>0)
+                            break;
+            case 'month':   isValid = (event.nativeEvent.inputType.includes("insert") && state.month.value.length<2) || 
+                                    (event.nativeEvent.inputType.includes("delete")&& state.month.value.length>0)
+                            break;
+            case 'year':    isValid = (event.nativeEvent.inputType.includes("insert") && state.year.value.length<4) || 
+                                    (event.nativeEvent.inputType.includes("delete")&& state.year.value.length>0)
+                            break;
+            case 'cvv':     isValid = (event.nativeEvent.inputType.includes("insert") && state.cvv.value.length<3) || 
+                                    (event.nativeEvent.inputType.includes("delete")&& state.cvv.value.length>0)
+                            break;
+        default : return state;
+    }
+    if(isValid)
+        return {...state, [name]:{value: event.target.value, error: false}}
+    else 
+        return state; 
+}
+
+const initialState = {
+    cardnum : {
+        value: "",
+        error: false
+    },
+    month: {
+        value: "",
+        error: false
+    },
+    year: {
+        value: "",
+        error: false
+    },
+    cvv: {
+        value: "",
+        error: false
+    }
+}
+
 export default function AddCardDrawer(props) {
-    const [cardnum, setCardNum] = useState("");
-    const [month, setMonth] = useState("");
-    const [year, setYear] = useState("");
-    const [cvv, setCVV] = useState("");
     const [loading, setLoading] = useState(false);
-
-    const [cardnumError, setCardNumError] = useState(false);
-    const [monthError, setMonthError] = useState(false);
-    const [yearError, setYearError] = useState(false);
-    const [cvvError, setCVVError] = useState(false);
-
-    const initialState = {
-        cardnum2 : {
-            value: "",
-            error: false
-        },
-        month2: {
-            value: "",
-            error: false
-        },
-        year2: {
-            value: "",
-            error: false
-        },
-        cvv2: {
-            value: "",
-            error: false
-        }
-    }
-
-    const handleEntry = (e) => {
-        const {name, value} = e.target;
-        switch(name){
-            case 'cardnum': 
-                if(e.nativeEvent.inputType.includes("insert") && cardnum.length<16) setCardNum(e.target.value); 
-                else if(e.nativeEvent.inputType.includes("delete") && cardnum.length>0) setCardNum(e.target.value);
-                setCardNumError(false);
-                break;
-            case 'month': 
-                if(e.nativeEvent.inputType.includes("insert") && month.length<2) setMonth(e.target.value); 
-                else if(e.nativeEvent.inputType.includes("delete") && month.length>0) setMonth(e.target.value);
-                setMonthError(false);
-                break;
-            case 'year':
-                if(e.nativeEvent.inputType.includes("insert") && year.length<4) setYear(e.target.value); 
-                else if(e.nativeEvent.inputType.includes("delete") && year.length>0) setYear(e.target.value);
-                setYearError(false);
-                break;
-            case 'cvv':
-                if(e.nativeEvent.inputType.includes("insert") && cvv.length<3) setCVV(e.target.value); 
-                else if(e.nativeEvent.inputType.includes("delete") && cvv.length>0) setCVV(e.target.value);
-                setCVVError(false);
-                break;
-        }
-    }
+    const [{cardnum, month, year, cvv}, dispatch] = useReducer(reducer, {...initialState});
 
     const handleAddNewCard = async () => {
         setLoading(true);
-        const response = await handleAddNewCardAPI(cardnum, month, year, cvv);
+        const response = await handleAddNewCardAPI(cardnum.value, month.value, year.value, cvv.value);
+        let errorSet = new Set();
         if(!response.success){
-            response.errors.forEach((e)=>{
-                switch(e.param){
-                    case "cardnum": setCardNumError(true); break;
-                    case "year": setYearError(true); break;
-                    case "month": setMonthError(true); break;
-                    case "cvv": setCVVError(true); break;
-                }
-            })
+            response.errors.forEach(e=>errorSet.add(e.param));
+            errorSet.forEach(e=>dispatch({name: e, showError:true, event: null}))
         }else if(response.success){
             setLoading(false);
             // props.handleAddNewCardSuccess();
@@ -99,9 +87,9 @@ export default function AddCardDrawer(props) {
             <Input
                 name="cardnum"
                 type="number"
-                value={cardnum}
-                onChange={handleEntry}
-                error={cardnumError}
+                value={cardnum.value}
+                onChange={(e)=>dispatch({name: "cardnum", event: e})}
+                error={cardnum.error}
                 startAdornment={
                     <InputAdornment position="start">
                         <CreditCardIcon fontSize="small"/>
@@ -121,9 +109,9 @@ export default function AddCardDrawer(props) {
                 <Input
                     name="month"
                     type="number"
-                    value={month}
-                    onChange={handleEntry}
-                    error={monthError}
+                    value={month.value}
+                    onChange={(e)=>dispatch({name: "month", event: e})}
+                    error={month.error}
                     startAdornment={
                         <InputAdornment position="start">
                             <EventIcon fontSize="small"/>
@@ -144,9 +132,9 @@ export default function AddCardDrawer(props) {
                 <Input
                     name="year"
                     type="number"
-                    value={year}
-                    onChange={handleEntry}
-                    error={yearError}
+                    value={year.value}
+                    onChange={(e)=>dispatch({name: "year", event: e})}
+                    error={year.error}
                     startAdornment={
                         <InputAdornment position="start">
                             <EventIcon fontSize="small"/>
@@ -167,9 +155,9 @@ export default function AddCardDrawer(props) {
                 <Input
                     name="cvv"
                     type="number"
-                    value={cvv}
-                    onChange={handleEntry}
-                    error={cvvError}
+                    value={cvv.value}
+                    onChange={(e)=>dispatch({name: "cvv", event: e})}
+                    error={cvv.error}
                     startAdornment={
                         <InputAdornment position="start">
                             <LockIcon fontSize="small"/>
