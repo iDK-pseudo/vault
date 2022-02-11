@@ -65,7 +65,7 @@ export default function AddCardDrawer(props) {
         const response = await handleAddNewCardAPI(cardnum.value, month.value, year.value, cvv.value);
         let errorSet = new Set();
         if(!response.success){
-            response.errors.forEach(e=>errorSet.add(e.param));
+            response.errors.forEach(e=>!e.valid ? errorSet.add(e.param): null);
             errorSet.forEach(e=>dispatch({name: e, showError:true, event: null}))
         }else if(response.success){
             setLoading(false);

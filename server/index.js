@@ -11,6 +11,7 @@ const mongoose = require('mongoose');
 const User = require('./models/user');
 const Card = require('./models/card');
 const isAuth = require('./routes/authMiddleware').isAuth;
+var cardValidator = require("card-validator");
 require('dotenv').config();
 
 
@@ -115,18 +116,42 @@ app.post('/logout', isAuth,
   })
 
 app.post("/api", isAuth,
-  check('cardnum', 'Please enter a valid Card Number').isCreditCard().trim().escape(),
-  check('month','Please enter a valid Month').matches(/\d{2}/).isInt({min: 01, max: 12}).trim().escape(),
-  check('year','Please enter a valid Year').matches(/\d{4}/).trim().escape(),
-  check('cvv','Please enter a valid CVV').matches(/^\d{3,4}$/).isInt().trim().escape(),
+  check('cardnum').trim().escape(),
+  check('month').trim().escape(),
+  check('year').trim().escape(),
+  check('cvv').trim().escape(),
   async (req, res) => {
-    const errorsResult = validationResult(req);
-    if (!errorsResult.isEmpty()) {
-      res.send({success: false, errors: errorsResult.errors});
-    }else{
-      const mongoRes = await Card.create({user: req.user, ...req.body});
+    const {cardnum, month, year, cvv} = req.body;
+    const numberValid = cardValidator.number(cardnum);
+    const isMonthValid = cardValidator.expirationMonth(month).isValid;
+    const isYearValid = cardValidator.expirationYear(year).isValid;
+    const isCvvValid = cardValidator.cvv(cvv).isValid;
+    if (numberValid.isValid && isMonthValid && isYearValid && isCvvValid) {
+      const mongoRes = await Card.create({user: req.user, ...req.body, cardType: numberValid.card.niceType});
       console.log(`A document was inserted with the _id: ${mongoRes._id}`);
       res.send({success: true});
+    }else{
+      res.send({
+        success: false, 
+        errors: [
+          {
+            param: "cardnum", 
+            valid: numberValid.isValid
+          },
+          {
+            param: "month", 
+            valid: isMonthValid
+          },
+          {
+            param: "year", 
+            valid: isYearValid
+          },
+          {
+            param: "cvv", 
+            valid: isCvvValid
+          }
+        ]
+      });
     }
   }
 );
