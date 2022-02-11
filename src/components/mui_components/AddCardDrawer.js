@@ -81,7 +81,7 @@ export default function AddCardDrawer(props) {
             open={props.open} 
             anchor="bottom"
             PaperProps = {{sx: {padding: 5}}}
-            onClose={props.handleDrawerClose}
+            onClose={()=>{dispatch({name: "reset", showError: false, event: null});props.handleDrawerClose()}}
         >   
             <InputLabel>
                     Card Number
