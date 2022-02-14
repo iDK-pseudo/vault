@@ -9,6 +9,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import LoginScreen from './components/mui_components/LoginScreen.js';
 import APIUtils from './api/APIUtils.js'
+import CircularProgress from '@mui/material/CircularProgress';
 
 class App extends Component {
 
@@ -75,7 +76,7 @@ class App extends Component {
         return (
           <div>
             <Header handleLogout={this.handleLogout} display={this.state.display}/>
-            <div className="loader"></div>
+            <CircularProgress sx={{marginLeft:"40%", marginTop: "70%"}}/>
           </div>
         )
       case 'welcome':
