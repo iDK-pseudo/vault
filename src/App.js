@@ -10,6 +10,7 @@ import Alert from '@mui/material/Alert';
 import LoginScreen from './components/mui_components/LoginScreen.js';
 import APIUtils from './api/APIUtils.js'
 import CircularProgress from '@mui/material/CircularProgress';
+import SignUpScreen from './components/mui_components/SignUpScreen.js';
 
 class App extends Component {
 
@@ -41,7 +42,7 @@ class App extends Component {
     const response = await fetch('/logout',{method: 'POST'});
     const data = await response.json();
     if(data.loggedOut){
-        this.setState({display: 'welcome'})
+        this.setState({display: 'login'})
     } 
   }   
 
@@ -52,7 +53,7 @@ class App extends Component {
 
   componentDidMount = async () => {
     if(!await APIUtils.verifyUser()){
-      this.setState({display:'welcome'});
+      this.setState({display:'login'});
     }else{
       const entries = await APIUtils.getCardList();
       this.setState({display:'homepage',cardList: entries, selectedCard: entries[0]});
@@ -79,11 +80,18 @@ class App extends Component {
             <CircularProgress sx={{marginLeft:"40%", marginTop: "70%"}}/>
           </div>
         )
-      case 'welcome':
+      case 'login':
         return (
           <div>
             <Header handleLogout={this.handleLogout} display={this.state.display}/>
-            <LoginScreen handleLoginSuccess={this.handleLoginSuccess}/>
+            <LoginScreen handleLoginSuccess={this.handleLoginSuccess} handleSignUpClick={()=>this.setState({display: "signup"})}/>
+          </div>
+        )
+      case 'signup':
+        return (
+          <div>
+            <Header handleLogout={this.handleLogout} display={this.state.display}/>
+            <SignUpScreen handleLoginClick={()=>this.setState({display: "login"})} handleSignUpSuccess={()=>this.setState({display: "login"})}/>
           </div>
         )
       case 'homepage': 

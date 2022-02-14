@@ -13,13 +13,13 @@ body {
     min-height: 90vh;
     color: black;
     font-size: 24px;
-    font-family: Ignite;
     padding: 8% 7%;
     overflow-y: hidden;
 }
 
 header {
     display: flex;
+    font-family: Ignite;
     justify-content: space-between;
     font-size: 35px;
 }

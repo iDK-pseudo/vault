@@ -7,6 +7,7 @@ import APIUtils from '../../api/APIUtils.js';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import InputAdornment from '@mui/material/InputAdornment';
+import Link from '@mui/material/Link';
 
 export default function (props) {
 
@@ -80,6 +81,10 @@ export default function (props) {
             >
                 Sign In
             </LoadingButton >
+            <Typography sx={{margin:"70% 0 0 15%"}}>
+                Don't have an account ?
+                <Link sx={{fontWeight: "bold"}} onClick={props.handleSignUpClick}> Sign Up</Link>
+            </Typography>
         </Box>
     )
 }

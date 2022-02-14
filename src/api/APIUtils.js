@@ -23,7 +23,6 @@ class APIUtils {
         return jsonData.entries;
     }
 
-
     static loginUser = async (email, password) => {
         const requestOptions = {
             method: 'POST',
@@ -34,6 +33,18 @@ class APIUtils {
         const jsonData = await response.json();
         return jsonData;
     }
+
+    static signUpUser = async (email, password) => {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({email, password})
+        };
+        const response = await fetch('/signup', requestOptions);
+        const jsonData = await response.json();
+        return jsonData;
+    }
+
 }
 
 export default APIUtils;
