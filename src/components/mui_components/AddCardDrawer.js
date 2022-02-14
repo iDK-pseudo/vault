@@ -7,7 +7,7 @@ import CreditCardIcon from '@mui/icons-material/CreditCard';
 import EventIcon from '@mui/icons-material/Event';
 import LockIcon from '@mui/icons-material/Lock';
 import AddCardIcon from '@mui/icons-material/AddCard';
-import handleAddNewCardAPI from '../../api/APIUtils.js'
+import APIUtils from '../../api/APIUtils.js'
 import LoadingButton from '@mui/lab/LoadingButton';
 
 function reducer (state, {name, event, showError}) {
@@ -63,7 +63,7 @@ export default function AddCardDrawer(props) {
 
     const handleAddNewCard = async () => {
         setLoading(true);
-        const response = await handleAddNewCardAPI(cardnum.value, month.value, year.value, cvv.value);
+        const response = await APIUtils.addNewCard(cardnum.value, month.value, year.value, cvv.value);
         let errorSet = new Set();
         if(!response.success){
             response.errors.forEach(e=>!e.valid ? errorSet.add(e.param): null);

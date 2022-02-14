@@ -1,5 +1,4 @@
 import './App.css';
-import Welcome from './components/Welcome.js';
 import CreditCard from './components/mui_components/CreditCard.js';
 import Header from './components/Header.js';
 import AddCardDrawer from './components/mui_components/AddCardDrawer.js';
@@ -8,6 +7,8 @@ import BottomNav from './components/mui_components/BottomNav.js';
 import CardList from './components/mui_components/CardList.js';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import LoginScreen from './components/mui_components/LoginScreen.js';
+import APIUtils from './api/APIUtils.js'
 
 class App extends Component {
 
@@ -17,7 +18,6 @@ class App extends Component {
       display : 'rendering',
       selectedCard : 0,
       newCardSuccess: false,
-      tableData: [],
       cardList: [], 
       drawerOpen: false
     }
@@ -32,9 +32,8 @@ class App extends Component {
   }
 
   handleLoginSuccess = async () => {
-    const response = await fetch('/cards');
-    const data = await response.json();
-    this.setState({display:'homepage',tableData: data.entries, selectedCard: data.entries[0]});
+    const entries = await APIUtils.getCardList();
+    this.setState({display:'homepage', cardList: entries, selectedCard: entries[0]});
   }
 
   handleLogout = async () => {
@@ -51,14 +50,11 @@ class App extends Component {
   }
 
   componentDidMount = async () => {
-    let response = await fetch('/verify');
-    let data = await response.json();
-    if(!data.isLoggedIn){
+    if(!await APIUtils.verifyUser()){
       this.setState({display:'welcome'});
     }else{
-      response = await fetch('/cards');
-      data = await response.json();
-      this.setState({display:'homepage',cardList: data.entries, selectedCard: data.entries[0]});
+      const entries = await APIUtils.getCardList();
+      this.setState({display:'homepage',cardList: entries, selectedCard: entries[0]});
     }
   }
 
@@ -86,7 +82,7 @@ class App extends Component {
         return (
           <div>
             <Header handleLogout={this.handleLogout} display={this.state.display}/>
-            <Welcome handleLoginSuccess={this.handleLoginSuccess}/>
+            <LoginScreen handleLoginSuccess={this.handleLoginSuccess}/>
           </div>
         )
       case 'homepage': 
