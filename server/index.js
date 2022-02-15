@@ -79,21 +79,22 @@ app.post('/login',
 );
 
 app.post('/signup',
-  check('email','Please enter valid email').isEmail().normalizeEmail().trim().escape(),
-  check('password','Password must contain atleast 8 chars, 1 Lowercase, 1 Uppercase, 1 Number, 1 Special Character')
-    .isStrongPassword()
-    .trim()
-    .escape(),
+  check('email').isEmail().normalizeEmail().trim().escape(),
+  check('password').isStrongPassword().trim().escape(),
+  check('pin').isNumeric({no_symbols: true}).isLength({min: 6, max: 6}).trim().escape(),
   async (req,res) => {
     const errorsResult = validationResult(req);
     if(errorsResult.isEmpty()){
       const buf =  crypto.randomBytes(32);
       const hashedPassword = crypto.pbkdf2Sync(req.body.password, buf, 310000, 32, 'sha256');
-      try {
+      const hashedPin = crypto.pbkdf2Sync(req.body.pin, buf, 310000, 32, 'sha256');
+      try
+       {
         const mongoRes = await User.create({
           _id: req.body.email,
           email: req.body.email, 
           password: hashedPassword.toJSON().data,
+          pin: hashedPin.toJSON().data,
           buf: buf.toJSON().data
         })
         console.log(`A user was inserted with the _id: ${mongoRes._id}`);

@@ -17,7 +17,8 @@ import FormHelperText from '@mui/material/FormHelperText';
 const initialState = {
     email: {value: "",helperText: "", error: false},
     password: {value: "", strength: -1, helperText: "Must contain atleast 8 characters, with upper and lowercase and a number and symbol", error: false},
-    confirmPassword: {value: "", helperText: "", error: false}
+    confirmPassword: {value: "", helperText: "", error: false},
+    pin: {value: "", helperText: "", error: false}
 }
 
 function reducer (state, {type, value}) {
@@ -39,6 +40,9 @@ function reducer (state, {type, value}) {
         case 'confirmPassword': 
             if(value === "error") return {...state, [type]:{value: state[type].value, helperText: "Passwords do not match", error: true}}; 
             else return {...state, [type]:{value, error: false}};
+        case 'pin':
+            if(value === "error") return {...state, [type]:{value: state[type].value, error: true}}; 
+            return {...state, [type]:{value, error: false}};
     }
 }
 
@@ -61,16 +65,21 @@ function ColoredLinearProgress (props) {
 export default function SignUpScreen(props) {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const [{email, password, confirmPassword}, dispatch] = useReducer(reducer, initialState);
+    const [showPin, setShowPin] = useState(false);
+    const [{email, password, confirmPassword, pin}, dispatch] = useReducer(reducer, initialState);
 
     async function handleSignUp () {
         let valid = true;
         setLoading(true);
-        if(email.value === ""){
+        if(email.value.length === 0){
             valid = false;
             dispatch({type: "email", value: "error-empty"});
         }
-        if(password.value===""){
+        if(pin.value.length < 6){
+            valid= false;
+            dispatch({type: "pin", value: "error"});
+        }
+        if(password.value.length === 0){
             valid = false;
             dispatch({type: "password", value: "error-empty"});
         }
@@ -83,7 +92,7 @@ export default function SignUpScreen(props) {
             dispatch({type: "confirmPassword", value:"error"});
         }
         if(valid){
-            const response = await APIUtils.signUpUser(email.value, password.value);
+            const response = await APIUtils.signUpUser(email.value, password.value, pin.value);
             if(response.success){
                 props.handleSignUpSuccess();
             }else {
@@ -93,10 +102,11 @@ export default function SignUpScreen(props) {
                         case 'email' : dispatch({type: "email", value: "error-invalid"}); break;
                     }
                 })
-                console.log("Failed", response);
+                setLoading(false);
             }
+        }else{
+            setLoading(false);
         }
-        setLoading(false);
         return;
     }
 
@@ -153,6 +163,34 @@ export default function SignUpScreen(props) {
                 }}
             />
             <FormHelperText sx={{height: 20}}>{confirmPassword.helperText}</FormHelperText>
+            <TextField
+                name="pin"
+                type={showPin ? "number":"password"}
+                value={pin.value}
+                error={pin.error}
+                fullWidth={true}
+                onPaste={(e)=>e.preventDefault()}
+                variant="outlined"
+                placeholder="6 Digit PIN"
+                onChange={(e)=>{
+                        if(
+                            (!isNaN(e.target.value)) &&
+                            ((e.nativeEvent.inputType.includes("insert") && pin.value.length<6) ||
+                            (e.nativeEvent.inputType.includes("delete") && pin.value.length>0))
+                        )
+                            dispatch({type: "pin", value: e.target.value})
+                    }
+                }
+                sx = {{ marginTop: 2 }}
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end" onClick={()=>setShowPin(!showPin)}>
+                        {!showPin ? <VisibilityIcon/> : <VisibilityOffIcon />}
+                        </InputAdornment>
+                    ),
+                }}
+            />
+            <FormHelperText sx={{height: 40}}>Choose a strong 6 digit PIN</FormHelperText>
             <LoadingButton 
                 loading={loading}
                 variant="contained"
@@ -165,7 +203,7 @@ export default function SignUpScreen(props) {
             >
                 Sign Up
             </LoadingButton >
-            <Typography sx={{margin:"30% 0 0 15%"}}>
+            <Typography sx={{margin:"15% 0 0 15%"}}>
                 Already have an account ?
                 <Link sx={{fontWeight: "bold"}} onClick={props.handleLoginClick}> Login </Link>
             </Typography>
