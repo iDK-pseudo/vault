@@ -211,6 +211,18 @@ app.get('/verify',
     }
   })
 
+app.get('/lockuser', isAuth,
+  async (req, res)=>{
+    const mongoRes = await User.updateOne({email: req.user}, {locked: true});
+    if(mongoRes.modifiedCount>0){
+      req.logout();
+      res.send({success: true});
+    }else{
+      res.send({success: false});
+    }
+  }
+)
+
 app.use(express.static(path.join(__dirname, "../build/")));
 
 app.get('*', (req, res) => {

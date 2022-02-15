@@ -56,6 +56,12 @@ class APIUtils {
         return jsonData.success;
     }
 
+    static lockUser = async () => {
+        const response = await fetch('/lockuser');
+        const jsonData = await response.json()
+        return jsonData.success;
+    }
+
 }
 
 export default APIUtils;

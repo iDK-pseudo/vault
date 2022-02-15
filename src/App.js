@@ -53,6 +53,19 @@ class App extends Component {
     this.setState({selectedCard: this.state.cardList.find(e=>e._id===id)});
   }
 
+  handlePinVerFailed = async () => {
+    if(await APIUtils.lockUser()){
+      this.setState({
+        display: "login",
+        selectedCard : 0,
+        newCardSuccess: false,
+        cardList: [], 
+        addCardDrawerOpen: false,
+        pinDrawerOpen: false
+      });
+    }
+  }
+
   componentDidMount = async () => {
     if(!await APIUtils.verifyUser()){
       this.setState({display:'login'});
@@ -107,7 +120,11 @@ class App extends Component {
               handleDrawerClose={()=>this.setState({addCardDrawerOpen: false})}
               handleAddNewCardSuccess={this.handleAddNewCardSuccess}
             />
-            <PinDrawer open={this.state.pinDrawerOpen} handleDrawerClose= {()=> this.setState({pinDrawerOpen: false})}/>
+            <PinDrawer 
+              open={this.state.pinDrawerOpen} 
+              handleDrawerClose= {()=> this.setState({pinDrawerOpen: false})}
+              handlePinVerFailed={this.handlePinVerFailed}
+            />
             <Snackbar
               open={this.state.newCardSuccess}
               autoHideDuration={2000}

@@ -13,6 +13,7 @@ export default function PinDrawer(props) {
 
     const [pin, setPin] = useState("");
     const [error, setError] = useState(false);
+    const [invalidAttempts, setInvalidAttempts] = useState(3);
 
     const handleEntry = (e) => {
         if(e.currentTarget.id === "backspace"){
@@ -37,6 +38,14 @@ export default function PinDrawer(props) {
         }
         if(await APIUtils.verifyUserPin(pin)){
             console.log("Verified");
+        }else{
+            if(invalidAttempts === 1){
+                props.handlePinVerFailed();
+            }else{
+                setInvalidAttempts(invalidAttempts-1);
+                setError(true);
+                setPin("");
+            }
         }
     }
 
@@ -54,6 +63,7 @@ export default function PinDrawer(props) {
                 value={pin}
                 error={error}
                 variant="standard"
+                helperText={`Invalid Attempts remaining: ${invalidAttempts}`}
                 sx={{
                     marginBottom: 2
                 }}

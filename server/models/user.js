@@ -6,6 +6,7 @@ const UserSchema = new mongoose.Schema({
     password: {type: Array, required: true},
     pin: {type: Array, required: true},
     buf: {type: Array, required: true},
+    locked: {type: Boolean, default: false},
     date: {type: Date, default: Date.now()}
 });
 
