@@ -14,7 +14,6 @@ export default function (props) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showError, setShowError] = useState(false);
-    const [helperText, setHelperText] = useState("");
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
@@ -25,13 +24,12 @@ export default function (props) {
             props.handleLoginSuccess();
         }else{
             setShowError(true);
-            setHelperText("Invalid");
         }
         setLoading(false);
     }
 
     return (
-        <Box sx={{marginTop: 15}}>
+        <Box sx={{marginTop: 10}}>
             <Typography sx={{textAlign: 'center', fontSize: "25px", fontWeight: "bold"}}>
                 Hello Again !
             </Typography>
@@ -42,25 +40,23 @@ export default function (props) {
                 name="email"
                 type="email"
                 error={showError}
-                helperText={helperText}
                 value={email}
                 fullWidth={true}
                 variant="outlined"
                 placeholder="Enter email"
                 onChange={(e)=>setEmail(e.target.value)}
-                sx = {{ marginTop: 5 }}
+                sx = {{ marginTop: 5, height: 70 }}
             />
             <TextField
                 name="password"
                 type={showPassword ? "text":"password"}
                 value={password}
                 error={showError}
-                helperText={helperText}
                 fullWidth={true}
                 variant="outlined"
                 placeholder="Enter password"
                 onChange={(e)=>setPassword(e.target.value)}
-                sx = {{ marginTop: 2 }}
+                sx = {{ marginTop: 2, height: 60 }}
                 InputProps={{
                     endAdornment: (
                       <InputAdornment position="end" onClick={()=>setShowPassword(!showPassword)}>
