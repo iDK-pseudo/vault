@@ -11,6 +11,7 @@ import LoginScreen from './components/mui_components/LoginScreen.js';
 import APIUtils from './api/APIUtils.js'
 import CircularProgress from '@mui/material/CircularProgress';
 import SignUpScreen from './components/mui_components/SignUpScreen.js';
+import PinDrawer from './components/mui_components/PinDrawer.js';
 
 class App extends Component {
 
@@ -21,7 +22,8 @@ class App extends Component {
       selectedCard : 0,
       newCardSuccess: false,
       cardList: [], 
-      drawerOpen: false
+      addCardDrawerOpen: false,
+      pinDrawerOpen: false
     }
   }
 
@@ -98,13 +100,14 @@ class App extends Component {
         return (
           <div>
             <Header handleLogout={this.handleLogout} display={this.state.display}/>
-            <CreditCard card={selectedCard}/>
+            <CreditCard card={selectedCard} handlePinEntry={()=>this.setState({pinDrawerOpen: true})}/>
             <CardList cardList={cardList} handleCardListItemClick={this.handleCardListItemClick}/>
             <AddCardDrawer 
-              open={this.state.drawerOpen} 
-              handleDrawerClose={()=>this.setState({drawerOpen: false})}
+              open={this.state.addCardDrawerOpen} 
+              handleDrawerClose={()=>this.setState({addCardDrawerOpen: false})}
               handleAddNewCardSuccess={this.handleAddNewCardSuccess}
             />
+            <PinDrawer open={this.state.pinDrawerOpen} handleDrawerClose= {()=> this.setState({pinDrawerOpen: false})}/>
             <Snackbar
               open={this.state.newCardSuccess}
               autoHideDuration={2000}
@@ -117,7 +120,7 @@ class App extends Component {
               </Alert>
             </Snackbar>
             <BottomNav 
-              handleAddCard={()=>this.setState({drawerOpen: true})}
+              handleAddCard={()=>this.setState({addCardDrawerOpen: true})}
             />
           </div>
         );

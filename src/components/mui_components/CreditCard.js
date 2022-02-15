@@ -14,7 +14,7 @@ import {ReactComponent as MasterCard} from '../../static/mastercard.svg';
 import {ReactComponent as AmericanExpress} from '../../static/american_express.svg';
 
 
-export default function CreditCard({card}) {
+export default function CreditCard({card, handlePinEntry}) {
 
   const [cardNumParts, setCardNumParts] = useState([]);
   const [logo, setLogo] = useState("");
@@ -79,7 +79,7 @@ export default function CreditCard({card}) {
               </Typography>
             </Grid>
             <Grid item xs={4}>
-              <IconButton sx={{float: "right", padding: 0}} onClick={()=>console.log("Clicked")}>
+              <IconButton sx={{float: "right", padding: 0}} onClick={handlePinEntry}>
                 <VisibilityOffIcon fontSize="large"/>
               </IconButton>
             </Grid>

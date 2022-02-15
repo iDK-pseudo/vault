@@ -13,7 +13,7 @@ class APIUtils {
 
     static verifyUser = async () => {
         const response = await fetch('/verify');
-        const jsonData = response.json()
+        const jsonData = await response.json()
         return jsonData.isLoggedIn;
     }
 
