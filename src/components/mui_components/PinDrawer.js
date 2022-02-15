@@ -35,14 +35,17 @@ export default function PinDrawer(props) {
             setError(true);
             return;
         }
+        if(await APIUtils.verifyUserPin(pin)){
+            console.log("Verified");
+        }
     }
 
     return (
-        <Drawer 
-                open={props.open}
-                anchor="bottom"
-                PaperProps = {{sx: {padding: 5, height: "52vh"}}}
-                onClose={()=>{props.handleDrawerClose()}}
+        <Drawer
+            open={props.open}
+            anchor="bottom"
+            PaperProps = {{sx: {padding: 5, height: "52vh"}}}
+            onClose={()=>{props.handleDrawerClose()}}
         >
             <Typography sx={{textAlign: "center", marginBottom: 2}}>Enter 6 Digit PIN</Typography>
             <TextField 
@@ -50,7 +53,7 @@ export default function PinDrawer(props) {
                 type="text"
                 value={pin}
                 error={error}
-                variant="standard" 
+                variant="standard"
                 sx={{
                     marginBottom: 2
                 }}

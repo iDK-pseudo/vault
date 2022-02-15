@@ -45,6 +45,17 @@ class APIUtils {
         return jsonData;
     }
 
+    static verifyUserPin = async (pin) => {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({pin})
+        };
+        const response = await fetch('/verifyPin', requestOptions);
+        const jsonData = await response.json();
+        return jsonData.success;
+    }
+
 }
 
 export default APIUtils;

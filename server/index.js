@@ -116,7 +116,27 @@ app.post('/logout', isAuth,
   (req, res)=> {
     req.logout();
     res.send({loggedOut: true});
-  })
+})
+
+app.post('/verifyPin',
+  isAuth,
+  check('pin').isNumeric({no_symbols: true}).isLength({min: 6, max: 6}).trim().escape(),
+  async (req, res)=> {
+    const errorsResult = validationResult(req);
+    if(errorsResult.isEmpty()){
+      const foundUser = await User.findOne({email: req.user});
+      if(!foundUser) res.send({success: false});
+      const hashedPin = crypto.pbkdf2Sync(req.body.pin, Buffer.from(foundUser.buf), 310000, 32, 'sha256');
+      if (!crypto.timingSafeEqual(Buffer.from(foundUser.pin), hashedPin)) {
+        res.send({success: false});
+      }else{
+        res.send({success: true});
+      }
+    }else{
+      res.send({success: false});
+    }
+  }
+)
 
 app.post("/api", isAuth,
   check('cardnum').trim().escape(),
