@@ -44,7 +44,14 @@ class App extends Component {
     const response = await fetch('/logout',{method: 'POST'});
     const data = await response.json();
     if(data.loggedOut){
-        this.setState({display: 'login'})
+      this.setState({
+        display: "login",
+        selectedCard : 0,
+        newCardSuccess: false,
+        cardList: [], 
+        addCardDrawerOpen: false,
+        pinDrawerOpen: false
+      });
     } 
   }   
 
