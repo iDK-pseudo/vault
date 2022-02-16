@@ -13,19 +13,25 @@ export default function (props) {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [pin, setPin] = useState("");
     const [showError, setShowError] = useState(false);
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [showPin, setShowPin] = useState(false);
+    const [locked, setLocked] = useState(false);
 
     const handleLogin = async () => {
        setLoading(true);
-       const response = await APIUtils.loginUser(email, password);
+       const response = locked ? await APIUtils.loginLockedUser(email, password, pin) : await APIUtils.loginUser(email, password);
         if(response.success){
             props.handleLoginSuccess();
         }else{
+            if(response.message==="Account Locked"){
+                setLocked(true);
+            }
             setShowError(true);
+            setLoading(false);
         }
-        setLoading(false);
     }
 
     return (
@@ -65,6 +71,35 @@ export default function (props) {
                     ),
                   }}
             />
+            {locked && 
+            <TextField
+                name="pin"
+                type={showPin ? "number":"password"}
+                value={pin}
+                error={showError}
+                helperText="Uh-oh, it seems your account is locked. Please enter your PIN to continue"
+                fullWidth={true}
+                onPaste={(e)=>e.preventDefault()}
+                variant="outlined"
+                placeholder="6 Digit PIN"
+                onChange={(e)=>{
+                        if(
+                            (!isNaN(e.target.value)) &&
+                            ((e.nativeEvent.inputType.includes("insert") && pin.length<6) ||
+                            (e.nativeEvent.inputType.includes("delete") && pin.length>0))
+                        )
+                            setPin(e.target.value);
+                    }
+                }
+                sx = {{ marginTop: 2 }}
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end" onClick={()=>setShowPin(!showPin)}>
+                        {!showPin ? <VisibilityIcon/> : <VisibilityOffIcon />}
+                        </InputAdornment>
+                    ),
+                }}
+            />}
             <LoadingButton 
                 loading={loading}
                 variant="contained"

@@ -1,17 +1,17 @@
 const express = require("express");
-const { body, check, validationResult } = require('express-validator');
+const { check, validationResult } = require('express-validator');
 const bodyParser = require('body-parser');
 const path = require("path");
 const passport = require('passport');
-const LocalStrategy = require('passport-local');
 const crypto = require('crypto');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const mongoose = require('mongoose');
 const User = require('./models/user');
 const Card = require('./models/card');
-const isAuth = require('./routes/authMiddleware').isAuth;
+const isAuth = require('./utils/authMiddleware').isAuth;
 var cardValidator = require("card-validator");
+const PassportHelper = require('./utils/passportUtil');
 require('dotenv').config();
 
 
@@ -43,38 +43,28 @@ app.use(passport.initialize());
 
 app.use(passport.session());
 
-passport.use(new LocalStrategy(async (email, password, cb) => {
-    const foundUser = await User.findOne({email: email});
-    if(!foundUser) return cb(null, false, { message: 'Incorrect email or password.' });
-    crypto.pbkdf2(password, Buffer.from(foundUser.buf), 310000, 32, 'sha256', (err, hashedPassword) => {
-      const bufferedPass = Buffer.from(foundUser.password);
-      if (!crypto.timingSafeEqual(bufferedPass, hashedPassword)) {
-        return cb(null, false, { message: 'Incorrect email or password.' });
-      }else{
-        return cb(null, email);
-      }
-    });
-}));
-
-passport.serializeUser(function(user, done) {
-  done(null, user);
-});
-
-passport.deserializeUser(function(user, done) {
-  done(null, user);
-});
+PassportHelper.initializePassport();
 
 app.post('/login',
-  function(req, res,next) {
-    passport.authenticate('local', (err, user, options)=>{
-      if(user){
-        req.logIn(user, (err)=>{
-        });
-        res.send({success:true});
-      }else{
-        res.send({success:false, ...options});
-      }
-    })(req,res,next);
+  check('username').isEmail().normalizeEmail().trim().escape(),
+  check('password').trim().escape(),
+  (req, res, next) => {
+    const errorsResult = validationResult(req);
+    if(errorsResult.isEmpty()){
+      PassportHelper.passportAuthenticate(req, res, next);
+    }
+  }
+);
+
+app.post('/lockedlogin',
+  check('username').isEmail().normalizeEmail().trim().escape(),
+  check('password').trim().escape(),
+  check('pin').isNumeric({no_symbols: true}).isLength({min: 6, max: 6}).trim().escape(),
+  (req, res, next) => {
+    const errorsResult = validationResult(req);
+    if(errorsResult.isEmpty()){
+      PassportHelper.passportAuthenticate(req, res, next);
+    }
   }
 );
 

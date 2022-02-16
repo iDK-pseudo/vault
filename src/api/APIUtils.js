@@ -34,6 +34,17 @@ class APIUtils {
         return jsonData;
     }
 
+    static loginLockedUser = async (email, password, pin) => {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({username: email, password, pin})
+        };
+        const response = await fetch('/lockedlogin', requestOptions);
+        const jsonData = await response.json();
+        return jsonData;
+    }
+
     static signUpUser = async (email, password, pin) => {
         const requestOptions = {
             method: 'POST',
