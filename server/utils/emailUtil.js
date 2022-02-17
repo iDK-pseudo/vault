@@ -1,8 +1,18 @@
 const sgMail = require('@sendgrid/mail')
 
 module.exports = class EmailHelper {
+    
+    static get WAITING_TIME(){
+        return 10000;
+    }
 
-    static sendEmail = (email,emailCode) => {
+    static isEmailRequired(emailCode, emailTimestamp){
+        const elapsedTime = Date.now()-emailTimestamp;
+        return emailCode && elapsedTime > this.WAITING_TIME;
+    }
+
+    static sendEmail = (email, reqSession) => {
+        const emailCode = Math.floor(100000 + Math.random() * 900000);
         const msg = {
             to: email, // Change to your recipient
             from: 'shivamsharma151999@gmail.com', // Change to your verified sender
@@ -27,5 +37,6 @@ module.exports = class EmailHelper {
         //     console.error(error)
         // })
         console.log(emailCode);
+        return [emailCode, Date.now()];
     }
 }

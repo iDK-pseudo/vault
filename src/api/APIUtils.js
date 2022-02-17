@@ -73,6 +73,17 @@ class APIUtils {
         return jsonData.success;
     }
 
+    static resendEmail = async(email) => {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({email})
+        };
+        const response = await fetch('/resend_email', requestOptions);
+        const jsonData = await response.json();
+        return jsonData;
+    }
+
 }
 
 export default APIUtils;

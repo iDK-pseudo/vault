@@ -38,6 +38,7 @@ module.exports = class PassportHelper {
                 await User.updateOne({_id: email}, {verified: true});
                 foundUser.verified = true;
                 delete req.session.emailCode;
+                delete req.session.emailTimestamp;
               }else{
                 return cb(null, false, {message: 'Incorrect email code'});
               }
@@ -46,10 +47,13 @@ module.exports = class PassportHelper {
 
           if((!foundUser.locked && passwordValid) || (foundUser.locked && passwordValid && pinValid)){
             if(!foundUser.verified) {
-              const emailCode = Math.floor(100000 + Math.random() * 900000);
-              req.session.emailCode = emailCode;
-              EmailHelper.sendEmail(email, emailCode);
-              return cb(null, false, {message: 'Email Unverified'});
+              if(!req.session.emailCode || EmailHelper.isEmailRequired(req.session.emailCode, req.session.emailTimestamp)){
+                [req.session.emailCode, req.session.emailTimestamp] = EmailHelper.sendEmail(email);
+                return cb(null, false, {message: 'Email Unverified'});
+              }else{
+                return cb(null, false, {message: 'Email already sent', emailTimestamp: req.session.emailTimestamp});
+              }
+              
             }
             return cb(null, email);
           }else{

@@ -7,11 +7,30 @@ import APIUtils from '../../api/APIUtils.js';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import InputAdornment from '@mui/material/InputAdornment';
+import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
-import ReplayIcon from '@mui/icons-material/Replay';
+import TimelapseIcon from '@mui/icons-material/Timelapse';
+
+const EndAdornment = ({showRetry, remainingTime, handleResendClick}) => {
+    if(showRetry){
+        return (
+        <Button position="end" sx={{height: "100%"}} onClick={handleResendClick}>
+            <Typography>Resend</Typography>
+        </Button>
+        )
+    }else{
+        return (
+            <InputAdornment position="end">
+                <Typography sx={{marginRight: 1}}>{remainingTime}s</Typography>
+                <TimelapseIcon/>
+            </InputAdornment>
+        );
+    }
+}
 
 export default function (props) {
 
+    const WAITING_TIME = 10000;
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [pin, setPin] = useState("");
@@ -20,26 +39,23 @@ export default function (props) {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showPin, setShowPin] = useState(false);
+    const [showRetry, setShowRetry] = useState(false);
     const [locked, setLocked] = useState(false);
     const [emailUnverified, setEmailUnverified] = useState(false);
     const [emailCodeHelperText, setEmailCodeHelperText] = useState("Your email appears to be unverified. Please enter the 6 digit code we sent to your email to continue.");
+    const [emailTimestamp, setEmailTimestamp] = useState(0);
+    const [remainingTime, setRemainingTime] = useState(Math.ceil(WAITING_TIME/1000));
 
     const handleLogin = async () => {
        setLoading(true);
 
-        if(
-            email.length===0 || 
-            password.length===0 ||
-            (locked && pin.length < 6) ||
-            (emailUnverified && emailCode.length < 6)
-        ){
+        if(email.length===0 || password.length===0 || (locked && pin.length < 6) || (emailUnverified && emailCode.length < 6)){
             setShowError(true);
             setLoading(false);
             return;
         }
 
-
-       const response = locked ? 
+        const response = locked ? 
                         await APIUtils.loginLockedUser(email, password, pin) :
                         emailUnverified ?
                         await APIUtils.loginLockedUser(email, password, emailCode) :
@@ -51,13 +67,33 @@ export default function (props) {
                 setLocked(true);
                 setEmailUnverified(false);
             }
-            if(response.message === "Email Unverified"){
+            else if(response.message === "Email Unverified"){
                 setEmailUnverified(true);
                 setLocked(false);
+                setTimeout(()=>setShowRetry(true), WAITING_TIME);
             }
-            if(response.message === "Incorrect email code") setEmailCodeHelperText("Incorrect code");
+            else if(response.message === "Incorrect email code") 
+                setEmailCodeHelperText("Incorrect code");
+            else if(response.message === "Email already sent"){
+                setEmailUnverified(true);
+                setEmailCodeHelperText("Email already sent.");
+                setShowRetry(false);
+                const rmTime = WAITING_TIME - (Date.now() - response.emailTimestamp);
+                setRemainingTime(Math.ceil(rmTime/1000));
+                setTimeout(()=>setShowRetry(true), rmTime);
+            }
             setShowError(true);
             setLoading(false);
+        }
+    }
+
+    const handleResendClick = async () => {
+        const response = await APIUtils.resendEmail(email);
+        if(response.success){
+            setShowRetry(false);
+            setRemainingTime(Math.ceil(WAITING_TIME/1000));
+            setTimeout(()=>setShowRetry(true), WAITING_TIME);
+            setEmailCodeHelperText("Email sent again.");
         }
     }
 
@@ -149,11 +185,7 @@ export default function (props) {
                 }
                 sx = {{ marginTop: 2 }}
                 InputProps={{
-                    endAdornment: (
-                        <InputAdornment position="end" onClick={()=>console.log()}>
-                        <ReplayIcon/>
-                        </InputAdornment>
-                    )
+                    endAdornment: <EndAdornment showRetry={showRetry} remainingTime={remainingTime} handleResendClick={handleResendClick}/>
                 }}
             />
             }

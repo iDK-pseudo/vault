@@ -172,6 +172,27 @@ app.post("/api", isAuth,
   }
 );
 
+
+app.post('/resend_email',
+  check('email').isEmail().normalizeEmail().trim().escape(),
+  async (req, res)=>{
+    const errorsResult = validationResult(req);
+    if(errorsResult.isEmpty()){
+      const foundUser = await User.findById(req.body.email);
+      if(foundUser){
+        if(EmailHelper.isEmailRequired(req.session.emailCode, req.session.emailTimestamp)){ 
+          [req.session.emailCode, req.session.emailTimestamp] = EmailHelper.sendEmail(req.body.email);
+          res.send({success: true});
+        }
+      }else{
+        res.status(400).send({success: false, msg: "User does not exist"});
+      }
+    }else{
+      res.send({success: false});
+    }
+})
+
+
 app.get('/lastcard', isAuth,
   async (req,res) => {
       let entry = await Card.find({user: req.user, _id: lastEnteredId}).limit(1);
