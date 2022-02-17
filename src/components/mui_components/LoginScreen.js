@@ -8,27 +8,54 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import InputAdornment from '@mui/material/InputAdornment';
 import Link from '@mui/material/Link';
+import ReplayIcon from '@mui/icons-material/Replay';
 
 export default function (props) {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [pin, setPin] = useState("");
+    const [emailCode, setEmailCode] = useState("");
     const [showError, setShowError] = useState(false);
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showPin, setShowPin] = useState(false);
     const [locked, setLocked] = useState(false);
+    const [emailUnverified, setEmailUnverified] = useState(false);
+    const [emailCodeHelperText, setEmailCodeHelperText] = useState("Your email appears to be unverified. Please enter the 6 digit code we sent to your email to continue.");
 
     const handleLogin = async () => {
        setLoading(true);
-       const response = locked ? await APIUtils.loginLockedUser(email, password, pin) : await APIUtils.loginUser(email, password);
+
+        if(
+            email.length===0 || 
+            password.length===0 ||
+            (locked && pin.length < 6) ||
+            (emailUnverified && emailCode.length < 6)
+        ){
+            setShowError(true);
+            setLoading(false);
+            return;
+        }
+
+
+       const response = locked ? 
+                        await APIUtils.loginLockedUser(email, password, pin) :
+                        emailUnverified ?
+                        await APIUtils.loginLockedUser(email, password, emailCode) :
+                        await APIUtils.loginUser(email, password);
         if(response.success){
             props.handleLoginSuccess();
         }else{
             if(response.message==="Account Locked"){
                 setLocked(true);
+                setEmailUnverified(false);
             }
+            if(response.message === "Email Unverified"){
+                setEmailUnverified(true);
+                setLocked(false);
+            }
+            if(response.message === "Incorrect email code") setEmailCodeHelperText("Incorrect code");
             setShowError(true);
             setLoading(false);
         }
@@ -100,6 +127,36 @@ export default function (props) {
                     ),
                 }}
             />}
+            {emailUnverified &&
+            <TextField
+            name="emailCode"
+            type="number"
+            value={emailCode}
+            error={showError}
+            fullWidth={true}
+            onPaste={(e)=>e.preventDefault()}
+            variant="outlined"
+            helperText={emailCodeHelperText}
+            placeholder="6 Digit Verification Code"
+            onChange={(e)=>{
+                    if(
+                        (!isNaN(e.target.value)) &&
+                        ((e.nativeEvent.inputType.includes("insert") && emailCode.length<6) ||
+                        (e.nativeEvent.inputType.includes("delete") && emailCode.length>0))
+                    )
+                        setEmailCode(e.target.value);
+                    }
+                }
+                sx = {{ marginTop: 2 }}
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end" onClick={()=>console.log()}>
+                        <ReplayIcon/>
+                        </InputAdornment>
+                    )
+                }}
+            />
+            }
             <LoadingButton 
                 loading={loading}
                 variant="contained"

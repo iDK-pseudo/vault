@@ -12,6 +12,7 @@ const Card = require('./models/card');
 const isAuth = require('./utils/authMiddleware').isAuth;
 var cardValidator = require("card-validator");
 const PassportHelper = require('./utils/passportUtil');
+const EmailHelper = require('./utils/emailUtil');
 require('dotenv').config();
 
 
@@ -105,7 +106,8 @@ app.post('/signup',
 app.post('/logout', isAuth,
   (req, res)=> {
     req.logout();
-    res.send({loggedOut: true});
+    res.clearCookie('connect.sid');
+    req.session.destroy((err)=>res.send({loggedOut: true}));
 })
 
 app.post('/verifyPin',
@@ -206,7 +208,8 @@ app.get('/lockuser', isAuth,
     const mongoRes = await User.updateOne({email: req.user}, {locked: true});
     if(mongoRes.modifiedCount>0){
       req.logout();
-      res.send({success: true});
+      res.clearCookie('connect.sid');
+      req.session.destroy((err)=>res.send({success: true}));
     }else{
       res.send({success: false});
     }
