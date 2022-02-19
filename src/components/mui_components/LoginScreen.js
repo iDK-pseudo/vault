@@ -21,7 +21,7 @@ const EndAdornment = ({showRetry, remainingTime, handleResendClick}) => {
     }else{
         return (
             <InputAdornment position="end">
-                <Typography sx={{marginRight: 1}}>{remainingTime}s</Typography>
+                <Typography sx={{marginRight: 1}}>{remainingTime}</Typography>
                 <TimelapseIcon/>
             </InputAdornment>
         );
@@ -30,7 +30,6 @@ const EndAdornment = ({showRetry, remainingTime, handleResendClick}) => {
 
 export default function (props) {
 
-    const WAITING_TIME = 10000;
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [pin, setPin] = useState("");
@@ -44,7 +43,7 @@ export default function (props) {
     const [emailUnverified, setEmailUnverified] = useState(false);
     const [emailCodeHelperText, setEmailCodeHelperText] = useState("Your email appears to be unverified. Please enter the 6 digit code we sent to your email to continue.");
     const [emailTimestamp, setEmailTimestamp] = useState(0);
-    const [remainingTime, setRemainingTime] = useState(Math.ceil(WAITING_TIME/1000));
+    const [remainingTime, setRemainingTime] = useState(0);
 
     const handleLogin = async () => {
        setLoading(true);
@@ -70,17 +69,22 @@ export default function (props) {
             else if(response.message === "Email Unverified"){
                 setEmailUnverified(true);
                 setLocked(false);
-                setTimeout(()=>setShowRetry(true), WAITING_TIME);
+                setRemainingTime(Math.ceil(response.duration/60000)+"m");
+                setTimeout(()=>setShowRetry(true), response.duration);
             }
             else if(response.message === "Incorrect email code") 
                 setEmailCodeHelperText("Incorrect code");
             else if(response.message === "Email already sent"){
                 setEmailUnverified(true);
-                setEmailCodeHelperText("Email already sent.");
                 setShowRetry(false);
-                const rmTime = WAITING_TIME - (Date.now() - response.emailTimestamp);
-                setRemainingTime(Math.ceil(rmTime/1000));
-                setTimeout(()=>setShowRetry(true), rmTime);
+                if(response.retries>=2){
+                    setEmailCodeHelperText("Email resend limit reached. Please wait 24 hours to try again or enter the last code you received.");
+                    setRemainingTime("24h");
+                }else{
+                    const rmTime = response.duration - (Date.now() - response.emailTimestamp);
+                    setRemainingTime(Math.ceil(rmTime/60000)+"m");
+                    setTimeout(()=>setShowRetry(true), rmTime);
+                }
             }
             setShowError(true);
             setLoading(false);
@@ -91,9 +95,13 @@ export default function (props) {
         const response = await APIUtils.resendEmail(email);
         if(response.success){
             setShowRetry(false);
-            setRemainingTime(Math.ceil(WAITING_TIME/1000));
-            setTimeout(()=>setShowRetry(true), WAITING_TIME);
+            setRemainingTime(Math.ceil(response.duration/60000)+"m");
+            setTimeout(()=>setShowRetry(true), response.duration);
             setEmailCodeHelperText("Email sent again.");
+        }else if(response.msg === "Resend Limit reached"){
+            setShowRetry(false);
+            setRemainingTime("24h");
+            setEmailCodeHelperText("Email resend limit reached. Please wait 24 hours to try again.");
         }
     }
 

@@ -3,14 +3,15 @@ const LocalStrategy = require('passport-local');
 const User = require('../models/user');
 const crypto = require('crypto');
 const EmailHelper = require('./emailUtil');
+const RedisHelper = require('./redisUtil.js');
 
 module.exports = class PassportHelper {
 
     static initializePassport = async () => {
         passport.use(new LocalStrategy({ passReqToCallback: true }, async (req, email, password, cb) => {
-          let passwordValid = false, pinValid= false;
+          let passwordValid = false, pinValid= false,redisSession = null;
           const foundUser = await User.findOne({email: email});
-          
+
           if(!foundUser) return cb(null, false, { message: 'Incorrect email or password.' });
           
           const hashedPassword = crypto.pbkdf2Sync(password, Buffer.from(foundUser.buf), 310000, 32, 'sha256');
@@ -31,14 +32,14 @@ module.exports = class PassportHelper {
               return cb(null, false, {message: 'Account Locked'});
             }
           }
-
+          
           if(!foundUser.verified){
-            if(!isNaN(req.body.pin) && req.session.emailCode){
-              if(req.body.pin == req.session.emailCode){
+            redisSession = await RedisHelper.get(email);
+            if(!isNaN(req.body.pin) && redisSession){
+              if(req.body.pin == redisSession.code){
                 await User.updateOne({_id: email}, {verified: true});
                 foundUser.verified = true;
-                delete req.session.emailCode;
-                delete req.session.emailTimestamp;
+                await RedisHelper.del(email);
               }else{
                 return cb(null, false, {message: 'Incorrect email code'});
               }
@@ -47,13 +48,18 @@ module.exports = class PassportHelper {
 
           if((!foundUser.locked && passwordValid) || (foundUser.locked && passwordValid && pinValid)){
             if(!foundUser.verified) {
-              if(!req.session.emailCode || EmailHelper.isEmailRequired(req.session.emailCode, req.session.emailTimestamp)){
-                [req.session.emailCode, req.session.emailTimestamp] = EmailHelper.sendEmail(email);
-                return cb(null, false, {message: 'Email Unverified'});
+              if(!redisSession || EmailHelper.isEmailRequired(redisSession)){
+                const newVal = EmailHelper.sendEmail(email, redisSession);
+                await RedisHelper.set(email, newVal);
+                return cb(null, false, {message: 'Email Unverified', duration: newVal.duration});
               }else{
-                return cb(null, false, {message: 'Email already sent', emailTimestamp: req.session.emailTimestamp});
+                return cb(null, false, {
+                  message: 'Email already sent',
+                  emailTimestamp: redisSession.timestamp, 
+                  duration: redisSession.duration,
+                  retries: redisSession.retries
+                });
               }
-              
             }
             return cb(null, email);
           }else{

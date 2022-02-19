@@ -13,6 +13,7 @@ const isAuth = require('./utils/authMiddleware').isAuth;
 var cardValidator = require("card-validator");
 const PassportHelper = require('./utils/passportUtil');
 const EmailHelper = require('./utils/emailUtil');
+const RedisHelper = require('./utils/redisUtil');
 require('dotenv').config();
 
 
@@ -45,6 +46,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 PassportHelper.initializePassport();
+
+RedisHelper.initialize();
 
 app.post('/login',
   check('username').isEmail().normalizeEmail().trim().escape(),
@@ -180,9 +183,15 @@ app.post('/resend_email',
     if(errorsResult.isEmpty()){
       const foundUser = await User.findById(req.body.email);
       if(foundUser){
-        if(EmailHelper.isEmailRequired(req.session.emailCode, req.session.emailTimestamp)){ 
-          [req.session.emailCode, req.session.emailTimestamp] = EmailHelper.sendEmail(req.body.email);
-          res.send({success: true});
+        const redisSession = await RedisHelper.get(req.body.email);
+        if(redisSession){
+          if(EmailHelper.isEmailRequired(redisSession)){ 
+            const newVal = EmailHelper.sendEmail(req.body.email, redisSession);
+            await RedisHelper.set(req.body.email, newVal);
+            res.send({success: true, duration: newVal.duration});
+          }else if(Number.parseInt(redisSession.retries) === 2) {
+            res.send({success: false, msg: "Resend Limit reached"});
+          }
         }
       }else{
         res.status(400).send({success: false, msg: "User does not exist"});
