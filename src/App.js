@@ -112,7 +112,7 @@ class App extends Component {
       case 'rendering':
         return (
           <div>
-            <Header handleLogout={this.handleLogout} display={this.state.display}/>
+            <Header handleLogout={this.handleLogout} display={display}/>
             <CircularProgress sx={{marginLeft:"40%", marginTop: "70%"}}/>
           </div>
         )

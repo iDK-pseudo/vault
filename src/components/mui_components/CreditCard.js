@@ -45,7 +45,7 @@ export default function CreditCard({card, handlePinEntry}) {
       raised
       sx={{ 
         minHeight: 200,
-        margin: "10px 0",
+        margin: "20px 0",
         backgroundImage: `url(${BackgroundImage})`,
         backgroundSize: "cover"
       }}
