@@ -212,14 +212,6 @@ app.get('/lastcard', isAuth,
 app.get('/cards', isAuth,
   async (req,res) => {
       let entries = await Card.find({user: req.user});
-      if(entries.length === 0){
-        entries = [
-          {
-            bank: "-",
-            cardnum: "-"
-          }
-        ]
-      }
       res.send({entries});
   }
 )

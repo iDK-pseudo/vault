@@ -12,6 +12,7 @@ import APIUtils from './api/APIUtils.js'
 import CircularProgress from '@mui/material/CircularProgress';
 import SignUpScreen from './components/mui_components/SignUpScreen.js';
 import PinDrawer from './components/mui_components/PinDrawer.js';
+import GetStarted from './components/mui_components/GetStarted.js';
 
 class App extends Component {
 
@@ -37,7 +38,11 @@ class App extends Component {
 
   handleLoginSuccess = async () => {
     const entries = await APIUtils.getCardList();
-    this.setState({display:'homepage', cardList: entries, selectedCard: entries[0]});
+    if(entries.length===0){
+      this.setState({display:'getStarted'});
+    }else{
+      this.setState({display:'homepage', cardList: entries, selectedCard: entries[0]});
+    }
   }
 
   handleLogout = async () => {
@@ -77,19 +82,28 @@ class App extends Component {
     if(!await APIUtils.verifyUser()){
       this.setState({display:'login'});
     }else{
-      const entries = await APIUtils.getCardList();
-      this.setState({display:'homepage',cardList: entries, selectedCard: entries[0]});
+      this.handleLoginSuccess();
     }
   }
 
   handleAddNewCardSuccess = async () => {
     let response = await fetch('/lastcard');
     let data = await response.json();
-    this.setState({
-      cardList: [...this.state.cardList, data.entry[0]],
-      newCardSuccess: true,
-      drawerOpen: false
-    })
+    if(this.state.cardList.length === 0){
+      this.setState({
+        display: 'homepage',
+        cardList: [...this.state.cardList, data.entry[0]],
+        selectedCard: data.entry[0],
+        newCardSuccess: true,
+        addCardDrawerOpen: false
+      })  
+    }else{
+      this.setState({
+        cardList: [...this.state.cardList, data.entry[0]],
+        newCardSuccess: true,
+        addCardDrawerOpen: false
+      })
+    } 
   }
 
   render () {
@@ -116,7 +130,33 @@ class App extends Component {
             <SignUpScreen handleLoginClick={()=>this.setState({display: "login"})} handleSignUpSuccess={()=>this.setState({display: "login"})}/>
           </div>
         )
-      case 'homepage': 
+      case 'getStarted':
+        return (
+          <div>
+            <Header handleLogout={this.handleLogout} display={this.state.display}/>
+            <GetStarted/>
+            <AddCardDrawer 
+              open={this.state.addCardDrawerOpen} 
+              handleDrawerClose={()=>this.setState({addCardDrawerOpen: false})}
+              handleAddNewCardSuccess={this.handleAddNewCardSuccess}
+            />
+            <Snackbar
+              open={this.state.newCardSuccess}
+              autoHideDuration={2000}
+              onClose={()=>this.setState({newCardSuccess: false})}
+              message="Card Added"
+              sx={{justifyContent: 'center'}}
+            >
+              <Alert sx={{width: "50%", background: "#0C0D0B", color: 'white'}}>
+                Card Added
+              </Alert>
+            </Snackbar>
+            <BottomNav 
+              handleAddCard={()=>this.setState({addCardDrawerOpen: true})}
+            />
+          </div>
+        )
+      case 'homepage':
         return (
           <div>
             <Header handleLogout={this.handleLogout} display={this.state.display}/>
