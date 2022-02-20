@@ -21,10 +21,10 @@ export default function CreditCard({card, handlePinEntry}) {
 
   useEffect(()=>{ 
     let parts = [], cardNumString = card.cardnum.toString();
-    parts.push(<div>****</div>);
-    parts.push(<div>****</div>);
-    parts.push(<div>****</div>);
-    parts.push(<div>{cardNumString.substring(12,16)}</div>);
+    parts.push(<div key={1}>1234</div>);
+    parts.push(<div key={2}>****</div>);
+    parts.push(<div key={3}>****</div>);
+    parts.push(<div key={4}>{cardNumString.substring(12,16)}</div>);
     setCardNumParts(parts);
 
     if(card.cardType === "Mastercard"){
@@ -46,35 +46,36 @@ export default function CreditCard({card, handlePinEntry}) {
       sx={{ 
         minHeight: 200,
         margin: "20px 0",
+        borderRadius: 2,
         backgroundImage: `url(${BackgroundImage})`,
-        backgroundSize: "cover"
+        backgroundSize: "cover",
       }}
     >
       {logo}
       <CardContent>
-          <Box sx={{display: 'flex', marginTop: 8, color: "white", fontFamily: "Arial", fontSize: 30, justifyContent: "space-between"}}>
+          <Box sx={{display: 'flex', alignItems: "center", marginTop: 8, color: "white", fontFamily: "SourceSansPro", fontWeight: "bold", fontSize: 32, justifyContent: "space-between"}}>
             {cardNumParts}
           </Box>
-          <Grid container sx={{marginTop: 4}}>
+          <Grid container sx={{marginTop: 5}}>
             <Grid item xs={4}>
-              <Typography variant="h4" component="div" sx={{fontSize: 12, color: "white", fontWeight: "bolder"}}>
-                Expires
+              <Typography variant="h4" component="div" sx={{fontSize: 12, color: "white", fontWeight: "bold", fontFamily: "SourceSansPro"}}>
+                EXP
               </Typography>
             </Grid>
             <Grid item xs={4}>
-              <Typography variant="h4" component="div" sx={{fontSize: 12, color: "white", fontWeight: "bolder"}}>
+              <Typography variant="h4" component="div" sx={{fontSize: 12, color: "white", fontWeight: "bold", fontFamily: "SourceSansPro"}}>
                 CVV             
               </Typography>
             </Grid>
           </Grid>
           <Grid container>
             <Grid item xs={4}>
-              <Typography sx={{color: "white", fontWeight: "bold", fontSize: 18}}>
+              <Typography sx={{color: "white", fontWeight: "bold", fontSize: 18, fontFamily: "SourceSansPro"}}>
                 {`${card.month}/${card.year}`}
               </Typography>
             </Grid>
             <Grid item xs={4}>
-              <Typography sx={{color: "white", fontWeight: "bold", fontSize: 18}}>
+              <Typography sx={{color: "white", fontWeight: "bold", fontSize: 18, fontFamily: "SourceSansPro"}}>
                 ***
               </Typography>
             </Grid>

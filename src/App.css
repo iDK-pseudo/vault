@@ -8,6 +8,11 @@
     src: url(./static/Ignite.otf);
 }
 
+@font-face {
+    font-family: SourceSansPro;
+    src: url(./static/SourceSansPro-Regular.ttf);
+}
+
 body {
     position: relative;
     min-height: 90vh;
