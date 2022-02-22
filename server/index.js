@@ -47,7 +47,7 @@ app.use(passport.session());
 
 PassportHelper.initializePassport();
 
-RedisHelper.initialize();
+// RedisHelper.initialize();
 
 app.post('/login',
   check('username').isEmail().normalizeEmail().trim().escape(),
@@ -87,9 +87,9 @@ app.post('/signup',
         const mongoRes = await User.create({
           _id: req.body.email,
           email: req.body.email, 
-          password: hashedPassword.toJSON().data,
-          pin: hashedPin.toJSON().data,
-          buf: buf.toJSON().data
+          password: hashedPassword.toString("base64"),
+          pin: hashedPin.toString("base64"),
+          buf: buf.toString("base64")
         })
         console.log(`A user was inserted with the _id: ${mongoRes._id}`);
         res.send({success: true});
@@ -121,8 +121,8 @@ app.post('/verifyPin',
     if(errorsResult.isEmpty()){
       const foundUser = await User.findOne({email: req.user});
       if(!foundUser) res.send({success: false});
-      const hashedPin = crypto.pbkdf2Sync(req.body.pin, Buffer.from(foundUser.buf), 310000, 32, 'sha256');
-      if (!crypto.timingSafeEqual(Buffer.from(foundUser.pin), hashedPin)) {
+      const hashedPin = crypto.pbkdf2Sync(req.body.pin, Buffer.from(foundUser.buf, "base64"), 310000, 32, 'sha256');
+      if (!crypto.timingSafeEqual(Buffer.from(foundUser.pin, "base64"), hashedPin)) {
         res.send({success: false});
       }else{
         res.send({success: true});

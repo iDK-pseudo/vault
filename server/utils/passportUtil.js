@@ -14,15 +14,15 @@ module.exports = class PassportHelper {
 
           if(!foundUser) return cb(null, false, { message: 'Incorrect email or password.' });
           
-          const hashedPassword = crypto.pbkdf2Sync(password, Buffer.from(foundUser.buf), 310000, 32, 'sha256');
-          if (crypto.timingSafeEqual( Buffer.from(foundUser.password), hashedPassword)) {
+          const hashedPassword = crypto.pbkdf2Sync(password, Buffer.from(foundUser.buf, "base64"), 310000, 32, 'sha256');
+          if (crypto.timingSafeEqual( Buffer.from(foundUser.password, "base64"), hashedPassword)) {
             passwordValid = true;
           }
 
           if(foundUser.locked) {
             if(!isNaN(req.body.pin)){
-              const hashedPin = crypto.pbkdf2Sync(req.body.pin, Buffer.from(foundUser.buf), 310000, 32, 'sha256');
-              if (crypto.timingSafeEqual(Buffer.from(foundUser.pin), hashedPin)) {
+              const hashedPin = crypto.pbkdf2Sync(req.body.pin, Buffer.from(foundUser.buf, "base64"), 310000, 32, 'sha256');
+              if (crypto.timingSafeEqual(Buffer.from(foundUser.pin, "base64"), hashedPin)) {
                 pinValid = true;
                 await User.updateOne({_id: email}, {locked: false});
               }else{
