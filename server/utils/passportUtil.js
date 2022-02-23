@@ -19,7 +19,7 @@ module.exports = class PassportHelper {
             passwordValid = true;
           }
 
-          if(foundUser.locked) {
+          if(passwordValid && foundUser.locked) {
             if(!isNaN(req.body.pin)){
               const hashedPin = crypto.pbkdf2Sync(req.body.pin, Buffer.from(foundUser.buf, "base64"), 310000, 32, 'sha256');
               if (crypto.timingSafeEqual(Buffer.from(foundUser.pin, "base64"), hashedPin)) {
