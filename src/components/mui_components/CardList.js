@@ -26,39 +26,49 @@ export default function CardList(props) {
                 each.cardTypeElement = <CreditCardIcon sx={{fontSize: "45px"}}/>
             }
         });
-
-        setCardList(props.cardList.map(each=>
-            <ListItem disablePadding
-                key={each._id}
-                data-id={each._id} 
-                sx={{
-                        backgroundColor: '#EBE3D5',
-                        borderRadius: 2,
-                        marginBottom: 1,
-                    }}
-                onClick={props.handleCardListItemClick}
-            >
-                <ListItemButton>
-                    <ListItemIcon sx={{marginRight: "20px"}}>
-                        {each.cardTypeElement}
-                    </ListItemIcon>
-                    <ListItemText 
-                        primary={"*"+each.cardnum.toString().slice(-4)}
-                        secondary={"Expires on "+each.month+"/"+each.year}
-                        primaryTypographyProps={{
-                            fontSize: "20px",
-                            fontFamily: "Calibri",
-                            fontWeight: "bold"
-                        }}
-                    />
-                </ListItemButton>   
-            </ListItem>
-        ));
+        setCardList(props.cardList);
     },[props.cardList]);
 
     return (
-        <List >
-           {cardList}
+        <List>
+           {cardList.map(each=>
+                <ListItem 
+                    disablePadding
+                    key={each._id}
+                    data-id={each._id}
+                    sx={{
+                            color: props.selectedCard._id === each._id ? "white":"black",
+                            backgroundColor: props.selectedCard._id === each._id ? "#CE7B91":"#cfcacc",
+                            borderRadius: 4,
+                            marginBottom: 1,
+                            height: 60
+                        }}
+                    onClick={props.handleCardListItemClick}
+                >
+                    <ListItemButton>
+                        <ListItemIcon sx={{marginRight: "20px"}}>
+                            {each.cardTypeElement}
+                        </ListItemIcon>
+                        <ListItemText 
+                            primary={""+each.cardnum.toString().slice(-4)}
+                            primaryTypographyProps={{
+                                fontSize: "20px",
+                                fontFamily: "Calibri",
+                                fontWeight: "bold"
+                            }}
+                        />
+                        <ListItemText 
+                            primary={`${each.month}/${each.year}`}
+                            primaryTypographyProps={{
+                                fontSize: "15px",
+                                fontFamily: "Calibri",
+                                textAlign: "right",
+                                fontWeight: "bold"
+                            }}
+                        />
+                    </ListItemButton>   
+                </ListItem>
+            )}
         </List>
     )
 }

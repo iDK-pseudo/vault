@@ -159,7 +159,7 @@ class App extends Component {
           <div>
             <Header handleLogout={this.handleLogout} display={this.state.display}/>
             <CreditCard card={selectedCard} handlePinEntry={()=>this.setState({pinDrawerOpen: true})}/>
-            <CardList cardList={cardList} handleCardListItemClick={this.handleCardListItemClick}/>
+            <CardList cardList={cardList} handleCardListItemClick={this.handleCardListItemClick} selectedCard={this.state.selectedCard}/>
             <AddCardDrawer 
               open={this.state.addCardDrawerOpen} 
               handleDrawerClose={()=>this.setState({addCardDrawerOpen: false})}
