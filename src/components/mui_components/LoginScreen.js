@@ -107,11 +107,11 @@ export default function (props) {
 
     return (
         <Box sx={{marginTop: 10}}>
-            <Typography sx={{textAlign: 'center', fontSize: "25px", fontWeight: "bold"}}>
-                Hello Again !
+            <Typography sx={{textAlign: "center", fontSize: "25px", fontWeight: "bold"}}>
+               Log in
             </Typography>
-            <Typography sx={{textAlign: 'center'}}>
-                Welcome back, you've been missed
+            <Typography sx={{textAlign: "center"}}>
+                Enter your credentials to continue
             </Typography>
             <TextField
                 name="email"
@@ -207,7 +207,7 @@ export default function (props) {
                 }}
                 onClick={handleLogin}
             >
-                Sign In
+                Log in
             </LoadingButton >
             <Typography sx={{margin:"70% 0 0 15%"}}>
                 Don't have an account ?

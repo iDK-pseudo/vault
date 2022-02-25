@@ -46,9 +46,8 @@ class App extends Component {
   }
 
   handleLogout = async () => {
-    const response = await fetch('/logout',{method: 'POST'});
-    const data = await response.json();
-    if(data.loggedOut){
+    const isLoggedOut = APIUtils.logoutUser();
+    if(isLoggedOut){
       this.setState({
         display: "login",
         selectedCard : 0,
@@ -87,19 +86,18 @@ class App extends Component {
   }
 
   handleAddNewCardSuccess = async () => {
-    let response = await fetch('/lastcard');
-    let data = await response.json();
+    const entry = await APIUtils.getLastCard();
     if(this.state.cardList.length === 0){
       this.setState({
         display: 'homepage',
-        cardList: [...this.state.cardList, data.entry[0]],
-        selectedCard: data.entry[0],
+        cardList: [...this.state.cardList, entry[0]],
+        selectedCard: entry[0],
         newCardSuccess: true,
         addCardDrawerOpen: false
       })  
     }else{
       this.setState({
-        cardList: [...this.state.cardList, data.entry[0]],
+        cardList: [...this.state.cardList, entry[0]],
         newCardSuccess: true,
         addCardDrawerOpen: false
       })

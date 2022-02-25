@@ -6,7 +6,7 @@ class APIUtils {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({cardnum, month, year, cvv})
         };
-        const response = await fetch('/api', requestOptions);
+        const response = await fetch('/create_card', requestOptions);
         const jsonData = await response.json();
         return jsonData;
     }
@@ -18,9 +18,15 @@ class APIUtils {
     }
 
     static getCardList = async () => {
-        const response = await fetch('/cards');
+        const response = await fetch('/cardlist');
         const jsonData = await response.json();
         return jsonData.entries;
+    }
+
+    static getLastCard = async () => {
+        const response = await fetch('/last_card');
+        const jsonData = await response.json();
+        return jsonData.entry;
     }
 
     static loginUser = async (email, password) => {
@@ -40,7 +46,7 @@ class APIUtils {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({username: email, password, pin})
         };
-        const response = await fetch('/lockedlogin', requestOptions);
+        const response = await fetch('/locked_login', requestOptions);
         const jsonData = await response.json();
         return jsonData;
     }
@@ -56,19 +62,28 @@ class APIUtils {
         return jsonData;
     }
 
+    static logoutUser = async () => {
+        const requestOptions = {
+            method: 'POST'
+        };
+        const response = await fetch('/logout', requestOptions);
+        const jsonData = await response.json();
+        return jsonData.loggedOut;
+    }
+
     static verifyUserPin = async (pin) => {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({pin})
         };
-        const response = await fetch('/verifyPin', requestOptions);
+        const response = await fetch('/verify_pin', requestOptions);
         const jsonData = await response.json();
         return jsonData.success;
     }
 
     static lockUser = async () => {
-        const response = await fetch('/lockuser');
+        const response = await fetch('/lock_user');
         const jsonData = await response.json()
         return jsonData.success;
     }
