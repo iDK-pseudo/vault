@@ -17,8 +17,17 @@ function reducer (state, {name, event, showError}) {
         return {...state, [name]:{value: state[name].value, error: true}}
 
     switch(name){
-            case 'cardnum': isValid = (event.nativeEvent.inputType.includes("insert") && state.cardnum.value.length<16) || 
-                                    (event.nativeEvent.inputType.includes("delete")&& state.cardnum.value.length>0)
+            case 'cardnum': let newCardNum = null;
+                            if (event.nativeEvent.inputType.includes("insert") && clearCardNum(event.target.value).length<=16){
+                                newCardNum = formatCardNum(event.target.value, "add");
+                                isValid = true;
+                            }else if( event.nativeEvent.inputType.includes("delete") && clearCardNum(event.target.value).length>=0){
+                                newCardNum = formatCardNum(event.target.value, "del");
+                                isValid = true;
+                            }
+                            if(isValid){
+                                return {...state, [name]:{value: newCardNum, error: false}}
+                            }
                             break;
             case 'month':   isValid = (event.nativeEvent.inputType.includes("insert") && state.month.value.length<2) || 
                                     (event.nativeEvent.inputType.includes("delete")&& state.month.value.length>0)
@@ -36,6 +45,25 @@ function reducer (state, {name, event, showError}) {
         return {...state, [name]:{value: event.target.value, error: false}}
     else 
         return state; 
+}
+
+const formatCardNum = (cardNum, action) => {
+    const cleared = clearCardNum(cardNum);
+    switch(action){
+        case "add": if(cleared.length!=16 && cleared.length%4 === 0){
+                        cardNum+="  ";
+                    }
+                    break;
+        case "del": if(cleared.length!=0 && cleared.length%4 === 0){
+                        cardNum = cardNum.substring(0,cardNum.length-2);
+                    }
+                    break;
+    }
+    return cardNum;
+}
+
+const clearCardNum = (cardNum) => {
+    return cardNum.replaceAll(/\s/g, "");
 }
 
 const initialState = {
@@ -63,7 +91,7 @@ export default function AddCardDrawer(props) {
 
     const handleAddNewCard = async () => {
         setLoading(true);
-        const response = await APIUtils.addNewCard(cardnum.value, month.value, year.value, cvv.value);
+        const response = await APIUtils.addNewCard(clearCardNum(cardnum.value), month.value, year.value, cvv.value);
         let errorSet = new Set();
         if(!response.success){
             response.errors.forEach(e=>!e.valid ? errorSet.add(e.param): null);
@@ -80,7 +108,9 @@ export default function AddCardDrawer(props) {
         <Drawer 
             open={props.open} 
             anchor="bottom"
-            PaperProps = {{sx: {padding: 5}}}
+            PaperProps = {{
+                sx: {padding: 5}
+            }}
             onClose={()=>{dispatch({name: "reset", showError: false, event: null});props.handleDrawerClose()}}
         >   
             <InputLabel>
@@ -88,7 +118,7 @@ export default function AddCardDrawer(props) {
             </InputLabel>
             <Input
                 name="cardnum"
-                type="number"
+                type="tel"
                 value={cardnum.value}
                 onChange={(e)=>dispatch({name: "cardnum", event: e})}
                 error={cardnum.error}
@@ -97,10 +127,11 @@ export default function AddCardDrawer(props) {
                         <CreditCardIcon fontSize="small"/>
                     </InputAdornment>
                 }
-                placeholder="1234 2232 1232 1223"
+                placeholder="1234  2232  1232  1223"
                 sx = {{
-                    fontSize: '25px',
-                    fontWeight: 'bolder'
+                    fontSize: '30px',
+                    fontWeight: 'bolder',
+                    fontFamily: "SourceSansPro"
                 }}
             />
             <div style= {{display: 'flex', marginTop: '30px'}}>
@@ -121,7 +152,7 @@ export default function AddCardDrawer(props) {
                     }
                     placeholder="01"
                     sx = {{
-                        fontSize: '20px',
+                        fontSize: '25px',
                         marginRight: '20px',
                         fontWeight: 'bolder'
                     }}
@@ -144,7 +175,7 @@ export default function AddCardDrawer(props) {
                     }
                     placeholder="2020"
                     sx = {{
-                        fontSize: '20px',
+                        fontSize: '25px',
                         marginRight: '20px',
                         fontWeight: 'bolder'
                     }}
@@ -167,7 +198,7 @@ export default function AddCardDrawer(props) {
                     }
                     placeholder="123"
                     sx = {{
-                        fontSize: '20px',
+                        fontSize: '25px',
                         fontWeight: 'bolder'
                     }}
                 />
