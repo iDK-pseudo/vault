@@ -24,7 +24,8 @@ class App extends Component {
       newCardSuccess: false,
       cardList: [], 
       addCardDrawerOpen: false,
-      pinDrawerOpen: false
+      pinDrawerOpen: false,
+      locked: true
     }
   }
 
@@ -36,12 +37,12 @@ class App extends Component {
     this.setState({display: 'homepage'});
   }
 
-  handleLoginSuccess = async () => {
+  handleLoginSuccess = async (locked) => {
     const entries = await APIUtils.getCardList();
     if(entries.length===0){
-      this.setState({display:'getStarted'});
+      this.setState({display:'getStarted', locked: !locked});
     }else{
-      this.setState({display:'homepage', cardList: entries, selectedCard: entries[0]});
+      this.setState({display:'homepage', cardList: entries, selectedCard: entries[0],  locked: !locked});
     }
   }
 
@@ -104,6 +105,16 @@ class App extends Component {
     } 
   }
 
+  handlePinVerSuccess = async () => {
+    const entries = await APIUtils.getCardList();
+    this.setState({
+      pinDrawerOpen: false,
+      cardList: entries,
+      selectedCard: entries[0],
+      locked: false
+    })
+  }
+
   render () {
     const {display, selectedCard, cardList} = this.state;
     switch(display){
@@ -158,7 +169,7 @@ class App extends Component {
         return (
           <div>
             <Header handleLogout={this.handleLogout} display={this.state.display}/>
-            <CreditCard card={selectedCard} handlePinEntry={()=>this.setState({pinDrawerOpen: true})}/>
+            <CreditCard card={selectedCard} handlePinEntry={()=>this.setState({pinDrawerOpen: true})} locked={this.state.locked}/>
             <CardList cardList={cardList} handleCardListItemClick={this.handleCardListItemClick} selectedCard={this.state.selectedCard}/>
             <AddCardDrawer 
               open={this.state.addCardDrawerOpen} 
@@ -169,6 +180,7 @@ class App extends Component {
               open={this.state.pinDrawerOpen} 
               handleDrawerClose= {()=> this.setState({pinDrawerOpen: false})}
               handlePinVerFailed={this.handlePinVerFailed}
+              handlePinVerSuccess={this.handlePinVerSuccess}
             />
             <Snackbar
               open={this.state.newCardSuccess}

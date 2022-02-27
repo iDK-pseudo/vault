@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
@@ -14,18 +15,33 @@ import {ReactComponent as MasterCard} from '../../static/mastercard.svg';
 import {ReactComponent as AmericanExpress} from '../../static/american_express.svg';
 
 
-export default function CreditCard({card, handlePinEntry}) {
+export default function CreditCard({card, handlePinEntry, locked}) {
 
   const [cardNumParts, setCardNumParts] = useState([]);
+  const [cvv, setCVV] = useState("***");
   const [logo, setLogo] = useState("");
+  const [pinIcon, setPinIcon] = useState(0);
 
-  useEffect(()=>{ 
-    let parts = [], cardNumString = card.cardnum.toString();
-    parts.push(<div key={1}>1234</div>);
-    parts.push(<div key={2}>****</div>);
-    parts.push(<div key={3}>****</div>);
-    parts.push(<div key={4}>{cardNumString.substring(12,16)}</div>);
+  useEffect(()=>{
+    let parts = [], cardNumString = card.cardnum ? card.cardnum.toString() : card.cardnumLast4.toString();
+
+    if(card.cardnum !== null){
+      parts.push(<div key={1}>{cardNumString.substring(0,4)}</div>);
+      parts.push(<div key={2}>{cardNumString.substring(4,8)}</div>);
+      parts.push(<div key={3}>{cardNumString.substring(8,12)}</div>);
+      parts.push(<div key={4}>{cardNumString.substring(12,16)}</div>);
+    }else{
+      parts.push(<div key={1}>****</div>);
+      parts.push(<div key={2}>****</div>);
+      parts.push(<div key={3}>****</div>);
+      parts.push(<div key={4}>{cardNumString}</div>);
+    }
+
     setCardNumParts(parts);
+
+    if(card.cvv!==null){
+      setCVV(card.cvv);
+    }
 
     if(card.cardType === "Mastercard"){
       setLogo(<MasterCard style={{height: "50px", marginRight: 2, float: 'right'}}/>);
@@ -39,6 +55,22 @@ export default function CreditCard({card, handlePinEntry}) {
       setLogo(<CreditCardIcon sx={{fontSize: "45px"}}/>);
     }
   },[card]);
+
+  useEffect(()=>{
+    if(locked){
+      setPinIcon(
+        <IconButton sx={{float: "right", padding: 0}} onClick={handlePinEntry}>
+          <VisibilityOffIcon fontSize="large"/>
+        </IconButton>
+      )
+    }else{
+      setPinIcon(
+        <IconButton sx={{float: "right", padding: 0}}>
+          <VisibilityIcon fontSize="large"/>
+        </IconButton>
+      )
+    }
+  }, [locked]);
 
   return (
     <Card 
@@ -76,13 +108,11 @@ export default function CreditCard({card, handlePinEntry}) {
             </Grid>
             <Grid item xs={4}>
               <Typography sx={{color: "white", fontWeight: "bold", fontSize: 18, fontFamily: "SourceSansPro"}}>
-                ***
+                {cvv}
               </Typography>
             </Grid>
             <Grid item xs={4}>
-              <IconButton sx={{float: "right", padding: 0}} onClick={handlePinEntry}>
-                <VisibilityOffIcon fontSize="large"/>
-              </IconButton>
+              {pinIcon}
             </Grid>
             </Grid>
       </CardContent>

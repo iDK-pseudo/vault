@@ -50,7 +50,7 @@ export default function CardList(props) {
                             {each.cardTypeElement}
                         </ListItemIcon>
                         <ListItemText 
-                            primary={""+each.cardnum.toString().slice(-4)}
+                            primary={each.cardnum ? each.cardnum.toString().slice(-4) : each.cardnumLast4.toString()}
                             primaryTypographyProps={{
                                 fontSize: "20px",
                                 fontFamily: "Calibri",

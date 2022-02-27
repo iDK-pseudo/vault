@@ -37,7 +37,7 @@ export default function PinDrawer(props) {
             return;
         }
         if(await APIUtils.verifyUserPin(pin)){
-            console.log("Verified");
+            props.handlePinVerSuccess();
         }else{
             if(invalidAttempts === 1){
                 props.handlePinVerFailed();

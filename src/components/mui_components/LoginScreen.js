@@ -60,7 +60,7 @@ export default function (props) {
                         await APIUtils.loginLockedUser(email, password, emailCode) :
                         await APIUtils.loginUser(email, password);
         if(response.success){
-            props.handleLoginSuccess();
+            props.handleLoginSuccess(locked);
         }else{
             if(response.message==="Account Locked"){
                 setLocked(true);
