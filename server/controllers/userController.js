@@ -76,6 +76,7 @@ exports.verify_pin = async function (req, res,next){
     if (!crypto.timingSafeEqual(Buffer.from(foundUser.pin, "base64"), hashedPin)) {
       res.send({success: false});
     }else{
+      req.session[req.user] = {unlocked: true};
       res.send({success: true});
     }
   }else{
@@ -180,6 +181,7 @@ exports.localStrategy = new LocalStrategy(
           });
         }
       }
+      req.session[email] = {unlocked: pinValid};
       return cb(null, email);
     }else{
       return cb(null, false, {message: 'Incorrect credentials'});

@@ -1,5 +1,6 @@
 const cardValidator = require('card-validator');
 const Card = require('../models/card');
+const CryptoHelper = require("../utils/cryptoUtil");
 
 exports.create_card = async function (req, res, next){
     const {cardnum, month, year, cvv} = req.body;
@@ -8,7 +9,12 @@ exports.create_card = async function (req, res, next){
     const isYearValid = cardValidator.expirationYear(year).isValid;
     const isCvvValid = cardValidator.cvv(cvv).isValid;
     if (numberValid.isValid && isMonthValid && isYearValid && isCvvValid) {
-        await Card.create({user: req.user, ...req.body, cardType: numberValid.card.niceType});
+        const eData = CryptoHelper.eCardDetails({
+            ...req.body, 
+            cardnumLast4: req.body.cardnum.slice(-4),
+            cardType: numberValid.card.niceType,
+        });
+        await Card.create({user: req.user, ...eData});
         res.send({success: true});
     }else{
         res.send({
@@ -24,6 +30,7 @@ exports.last_card = async function (req, res, next){
 }
 
 exports.cardlist = async function (req, res, next){
-    let entries = await Card.find({user: req.user});
-    res.send({entries});
+    const entries = await Card.find({user: req.user}).lean();
+    const dEntries = CryptoHelper.dCardDetails(entries, req.session[req.user].unlocked);
+    res.send({entries: dEntries});
 }
