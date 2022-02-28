@@ -25,8 +25,9 @@ exports.create_card = async function (req, res, next){
 }
 
 exports.last_card = async function (req, res, next){
-    let entry = await Card.find({user: req.user}).sort({_id:-1}).limit(1);
-    res.send({entry});
+    const entry = await Card.find({user: req.user}).sort({_id:-1}).limit(1);
+    const dEntry = CryptoHelper.dCardDetails(entry, req.session[req.user].unlocked);
+    res.send({entry: dEntry});
 }
 
 exports.cardlist = async function (req, res, next){
