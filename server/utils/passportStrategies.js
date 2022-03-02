@@ -135,6 +135,7 @@ exports.GoogleStrategy = function () {
                 googleId: profile.id,
                 fullName: profile.displayName,
                 email: profile.emails[0].value,
+                verified: true,
             });
             return cb(null, { user: createdUser.email, restrict: true });
         }

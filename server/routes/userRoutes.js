@@ -63,4 +63,14 @@ router.get("/auth/google", passport.authenticate("google"));
 
 router.get("/auth/google/redirect", userController.authGoogleRedirect);
 
+router.post(
+    "/insert_pin",
+    check("pin")
+        .isNumeric({ no_symbols: true })
+        .isLength({ min: 6, max: 6 })
+        .trim()
+        .escape(),
+    userController.insertPin
+);
+
 module.exports = router;

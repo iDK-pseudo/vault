@@ -118,7 +118,7 @@ exports.verify_pin = async function (req, res, next) {
 
 exports.verify = function (req, res, next) {
     if (req.isAuthenticated()) {
-        res.send({ isLoggedIn: true });
+        res.send({ isLoggedIn: true, restrict: req.session.passport.restrict });
     } else {
         res.send({ isLoggedIn: false });
     }
@@ -175,4 +175,40 @@ exports.authGoogleRedirect = function (req, res, next) {
         }
         res.redirect("/");
     })(req, res);
+};
+
+exports.insertPin = async function (req, res, next) {
+    const errorsResult = validationResult(req);
+    if (
+        errorsResult.isEmpty() &&
+        req.isAuthenticated() &&
+        req.session.passport.restrict
+    ) {
+        const foundUser = await User.findOne({ email: req.user }).lean();
+        if (foundUser) {
+            const buf = crypto.randomBytes(32);
+            const hashedPin = crypto.pbkdf2Sync(
+                req.body.pin,
+                buf,
+                310000,
+                32,
+                "sha256"
+            );
+            await User.updateOne(
+                { email: req.user },
+                {
+                    pin: hashedPin.toString("base64"),
+                    buf: buf.toString("base64"),
+                }
+            );
+            delete req.session.passport.restrict;
+            res.send({ success: true });
+        } else {
+            res.status(401).send(
+                "You are not authorized to view this resource"
+            );
+        }
+    } else {
+        res.status(401).send("You are not authorized to view this resource");
+    }
 };
