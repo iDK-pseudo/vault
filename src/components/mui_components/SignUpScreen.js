@@ -1,118 +1,201 @@
-import React, {useState, useReducer} from 'react'
-import { makeStyles } from '@mui/styles';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import LoadingButton from '@mui/lab/LoadingButton';
-import Typography from '@mui/material/Typography';
-import APIUtils from '../../api/APIUtils.js';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import InputAdornment from '@mui/material/InputAdornment';
-import Link from '@mui/material/Link';
-import LinearProgress from '@mui/material/LinearProgress';
-import { passwordStrength } from 'check-password-strength'
-import FormHelperText from '@mui/material/FormHelperText';
-
+import React, { useState, useReducer } from "react";
+import { makeStyles } from "@mui/styles";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import LoadingButton from "@mui/lab/LoadingButton";
+import Typography from "@mui/material/Typography";
+import APIUtils from "../../api/APIUtils.js";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import InputAdornment from "@mui/material/InputAdornment";
+import Link from "@mui/material/Link";
+import LinearProgress from "@mui/material/LinearProgress";
+import { passwordStrength } from "check-password-strength";
+import FormHelperText from "@mui/material/FormHelperText";
 
 const initialState = {
-    email: {value: "",helperText: "", error: false},
-    password: {value: "", strength: -1, helperText: "Must contain atleast 8 characters, with upper and lowercase and a number and symbol", error: false},
-    confirmPassword: {value: "", helperText: "", error: false},
-    pin: {value: "", helperText: "", error: false}
-}
+    email: { value: "", helperText: "", error: false },
+    password: {
+        value: "",
+        strength: -1,
+        helperText:
+            "Must contain atleast 8 characters, with upper and lowercase and a number and symbol",
+        error: false,
+    },
+    confirmPassword: { value: "", helperText: "", error: false },
+    pin: { value: "", helperText: "", error: false },
+};
 
-function reducer (state, {type, value}) {
-    switch(type){
-        case 'email': 
-            if(value==="error-empty") 
-                return {...state, [type]:{value: state[type].value, helperText: "Please enter an email", error: true}}; 
-            if(value==="error-duplicate") 
-                return {...state, [type]:{value: state[type].value, helperText: "User with this email already exists", error: true}};
-            if(value==="error-invalid")
-                return {...state, [type]:{value: state[type].value, helperText: "Please enter valid email", error: true}}; 
-            return {...state, [type]:{value, error: false}};
-        case 'password':
-            if(value==="error-empty") 
-                return {...state, [type]:{value: state[type].value, strength: -1, helperText: "Password cannot be empty", error: true}};
-            if(value==="error-weak")    
-                return {...state, [type]:{value: state[type].value, strength: state[type].strength, helperText: "Password too weak. Please choose a strong password.", error: true}};
-            return {...state, [type]:{value, strength: value === "" ? -1 : passwordStrength(value).id, helperText: "Must contain atleast 8 characters, with upper and lowercase and a number and symbol", error: false}};
-        case 'confirmPassword': 
-            if(value === "error") return {...state, [type]:{value: state[type].value, helperText: "Passwords do not match", error: true}}; 
-            else return {...state, [type]:{value, error: false}};
-        case 'pin':
-            if(value === "error") return {...state, [type]:{value: state[type].value, error: true}}; 
-            return {...state, [type]:{value, error: false}};
+function reducer(state, { type, value }) {
+    switch (type) {
+        case "email":
+            if (value === "error-empty")
+                return {
+                    ...state,
+                    [type]: {
+                        value: state[type].value,
+                        helperText: "Please enter an email",
+                        error: true,
+                    },
+                };
+            if (value === "error-duplicate")
+                return {
+                    ...state,
+                    [type]: {
+                        value: state[type].value,
+                        helperText: "User with this email already exists",
+                        error: true,
+                    },
+                };
+            if (value === "error-invalid")
+                return {
+                    ...state,
+                    [type]: {
+                        value: state[type].value,
+                        helperText: "Please enter valid email",
+                        error: true,
+                    },
+                };
+            return { ...state, [type]: { value, error: false } };
+        case "password":
+            if (value === "error-empty")
+                return {
+                    ...state,
+                    [type]: {
+                        value: state[type].value,
+                        strength: -1,
+                        helperText: "Password cannot be empty",
+                        error: true,
+                    },
+                };
+            if (value === "error-weak")
+                return {
+                    ...state,
+                    [type]: {
+                        value: state[type].value,
+                        strength: state[type].strength,
+                        helperText:
+                            "Password too weak. Please choose a strong password.",
+                        error: true,
+                    },
+                };
+            return {
+                ...state,
+                [type]: {
+                    value,
+                    strength: value === "" ? -1 : passwordStrength(value).id,
+                    helperText:
+                        "Must contain atleast 8 characters, with upper and lowercase and a number and symbol",
+                    error: false,
+                },
+            };
+        case "confirmPassword":
+            if (value === "error")
+                return {
+                    ...state,
+                    [type]: {
+                        value: state[type].value,
+                        helperText: "Passwords do not match",
+                        error: true,
+                    },
+                };
+            else return { ...state, [type]: { value, error: false } };
+        case "pin":
+            if (value === "error")
+                return {
+                    ...state,
+                    [type]: { value: state[type].value, error: true },
+                };
+            return { ...state, [type]: { value, error: false } };
     }
 }
 
 const useStyles = makeStyles({
-    root:{
+    root: {
         "&.MuiLinearProgress-root": {
-            backgroundColor: "lightgray"
+            backgroundColor: "lightgray",
         },
         "&.MuiLinearProgress-root .MuiLinearProgress-bar1Determinate": {
             backgroundColor: (props) => props.color,
-        }
-    }
+        },
+    },
 });
 
-function ColoredLinearProgress (props) {
+function ColoredLinearProgress(props) {
     const classes = useStyles(props);
-    return <LinearProgress variant="determinate" value={props.value} className={classes.root}/>
+    return (
+        <LinearProgress
+            variant="determinate"
+            value={props.value}
+            className={classes.root}
+        />
+    );
 }
 
 export default function SignUpScreen(props) {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showPin, setShowPin] = useState(false);
-    const [{email, password, confirmPassword, pin}, dispatch] = useReducer(reducer, initialState);
+    const [{ email, password, confirmPassword, pin }, dispatch] = useReducer(
+        reducer,
+        initialState
+    );
 
-    async function handleSignUp () {
+    async function handleSignUp() {
         let valid = true;
         setLoading(true);
-        if(email.value.length === 0){
+        if (email.value.length === 0) {
             valid = false;
-            dispatch({type: "email", value: "error-empty"});
+            dispatch({ type: "email", value: "error-empty" });
         }
-        if(pin.value.length < 6){
-            valid= false;
-            dispatch({type: "pin", value: "error"});
-        }
-        if(password.value.length === 0){
+        if (pin.value.length < 6) {
             valid = false;
-            dispatch({type: "password", value: "error-empty"});
+            dispatch({ type: "pin", value: "error" });
         }
-        else if(password.strength<2){
-            valid=false;
-            dispatch({type: "password", value:"error-weak"});
-        }
-        if(password.value !== confirmPassword.value){
+        if (password.value.length === 0) {
             valid = false;
-            dispatch({type: "confirmPassword", value:"error"});
+            dispatch({ type: "password", value: "error-empty" });
+        } else if (password.strength < 2) {
+            valid = false;
+            dispatch({ type: "password", value: "error-weak" });
         }
-        if(valid){
-            const response = await APIUtils.signUpUser(email.value, password.value, pin.value);
-            if(response.success){
+        if (password.value !== confirmPassword.value) {
+            valid = false;
+            dispatch({ type: "confirmPassword", value: "error" });
+        }
+        if (valid) {
+            const response = await APIUtils.signUpUser(
+                email.value,
+                password.value,
+                pin.value
+            );
+            if (response.success) {
                 props.handleSignUpSuccess();
-            }else {
-                response.errors.forEach((e)=>{
-                    switch(e.param){
-                        case 'duplicate-email': dispatch({type: "email", value: "error-duplicate"}); break;
-                        case 'email' : dispatch({type: "email", value: "error-invalid"}); break;
+            } else {
+                response.errors.forEach((e) => {
+                    switch (e.param) {
+                        case "duplicate-email":
+                            dispatch({
+                                type: "email",
+                                value: "error-duplicate",
+                            });
+                            break;
+                        case "email":
+                            dispatch({ type: "email", value: "error-invalid" });
+                            break;
                     }
-                })
+                });
                 setLoading(false);
             }
-        }else{
+        } else {
             setLoading(false);
         }
         return;
     }
 
     return (
-        <Box sx={{marginTop: 10}}>
-            <Typography sx={{textAlign: 'center', fontSize: "20px"}}>
+        <Box sx={{ marginTop: 10 }}>
+            <Typography sx={{ textAlign: "center", fontSize: "20px" }}>
                 Create an account, it's free
             </Typography>
             <TextField
@@ -123,10 +206,14 @@ export default function SignUpScreen(props) {
                 fullWidth={true}
                 variant="outlined"
                 placeholder="Enter email"
-                onChange={(e)=>dispatch({type: "email", value: e.target.value})}
-                sx = {{ marginTop: 5 }}
+                onChange={(e) =>
+                    dispatch({ type: "email", value: e.target.value })
+                }
+                sx={{ marginTop: 5 }}
             />
-            <FormHelperText sx={{height: 15}}>{email.helperText}</FormHelperText>
+            <FormHelperText sx={{ height: 15 }}>
+                {email.helperText}
+            </FormHelperText>
             <TextField
                 name="password"
                 type="password"
@@ -135,78 +222,125 @@ export default function SignUpScreen(props) {
                 fullWidth={true}
                 variant="outlined"
                 placeholder="Enter password"
-                onChange={(e)=>dispatch({type: "password", value: e.target.value})}
-                sx = {{ marginTop: 2 }}
+                onChange={(e) =>
+                    dispatch({ type: "password", value: e.target.value })
+                }
+                sx={{ marginTop: 2 }}
             />
-            <ColoredLinearProgress 
-                color={password.strength === -1 ? "lightgray" : password.strength === 0 ? "#E75408": password.strength < 2 ? "#DC993D" : "#3EB060"}
-                value={password.strength === -1 ? 0 : password.strength === 0 ? 25: password.strength < 2 ? 50 : 100}
+            <ColoredLinearProgress
+                color={
+                    password.strength === -1
+                        ? "lightgray"
+                        : password.strength === 0
+                        ? "#E75408"
+                        : password.strength < 2
+                        ? "#DC993D"
+                        : "#3EB060"
+                }
+                value={
+                    password.strength === -1
+                        ? 0
+                        : password.strength === 0
+                        ? 25
+                        : password.strength < 2
+                        ? 50
+                        : 100
+                }
             />
-            <FormHelperText sx={{height: 40}}>{password.helperText}</FormHelperText>
+            <FormHelperText sx={{ height: 40 }}>
+                {password.helperText}
+            </FormHelperText>
             <TextField
                 name="confirmPassword"
-                type={showPassword ? "text":"password"}
+                type={showPassword ? "text" : "password"}
                 value={confirmPassword.value}
                 error={confirmPassword.error}
                 fullWidth={true}
-                onPaste={(e)=>e.preventDefault()}
+                onPaste={(e) => e.preventDefault()}
                 variant="outlined"
                 placeholder="Confirm password"
-                onChange={(e)=>dispatch({type: "confirmPassword", value: e.target.value})}
-                sx = {{ marginTop: 2 }}
+                onChange={(e) =>
+                    dispatch({ type: "confirmPassword", value: e.target.value })
+                }
+                sx={{ marginTop: 2 }}
                 InputProps={{
                     endAdornment: (
-                        <InputAdornment position="end" onClick={()=>setShowPassword(!showPassword)}>
-                        {!showPassword ? <VisibilityIcon/> : <VisibilityOffIcon />}
+                        <InputAdornment
+                            position="end"
+                            onClick={() => setShowPassword(!showPassword)}
+                        >
+                            {!showPassword ? (
+                                <VisibilityIcon />
+                            ) : (
+                                <VisibilityOffIcon />
+                            )}
                         </InputAdornment>
                     ),
                 }}
             />
-            <FormHelperText sx={{height: 20}}>{confirmPassword.helperText}</FormHelperText>
+            <FormHelperText sx={{ height: 20 }}>
+                {confirmPassword.helperText}
+            </FormHelperText>
             <TextField
                 name="pin"
-                type={showPin ? "number":"password"}
+                type={showPin ? "number" : "password"}
                 value={pin.value}
                 error={pin.error}
                 fullWidth={true}
-                onPaste={(e)=>e.preventDefault()}
+                onPaste={(e) => e.preventDefault()}
                 variant="outlined"
                 placeholder="6 Digit PIN"
-                onChange={(e)=>{
-                        if(
-                            (!isNaN(e.target.value)) &&
-                            ((e.nativeEvent.inputType.includes("insert") && pin.value.length<6) ||
-                            (e.nativeEvent.inputType.includes("delete") && pin.value.length>0))
-                        )
-                            dispatch({type: "pin", value: e.target.value})
-                    }
-                }
-                sx = {{ marginTop: 2 }}
+                onChange={(e) => {
+                    if (
+                        !isNaN(e.target.value) &&
+                        ((e.nativeEvent.inputType.includes("insert") &&
+                            pin.value.length < 6) ||
+                            (e.nativeEvent.inputType.includes("delete") &&
+                                pin.value.length > 0))
+                    )
+                        dispatch({ type: "pin", value: e.target.value });
+                }}
+                sx={{ marginTop: 2 }}
                 InputProps={{
                     endAdornment: (
-                        <InputAdornment position="end" onClick={()=>setShowPin(!showPin)}>
-                        {!showPin ? <VisibilityIcon/> : <VisibilityOffIcon />}
+                        <InputAdornment
+                            position="end"
+                            onClick={() => setShowPin(!showPin)}
+                        >
+                            {!showPin ? (
+                                <VisibilityIcon />
+                            ) : (
+                                <VisibilityOffIcon />
+                            )}
                         </InputAdornment>
                     ),
                 }}
             />
-            <FormHelperText sx={{height: 40}}>Choose a strong 6 digit PIN</FormHelperText>
-            <LoadingButton 
+            <FormHelperText sx={{ height: 40 }}>
+                Choose a strong 6 digit PIN
+            </FormHelperText>
+            <LoadingButton
                 loading={loading}
                 variant="contained"
                 sx={{
                     marginTop: 5,
                     padding: "15px 0",
-                    width:"100%"
+                    width: "100%",
                 }}
                 onClick={handleSignUp}
             >
                 Sign Up
-            </LoadingButton >
-            <Typography sx={{margin:"15% 0 0 15%"}}>
+            </LoadingButton>
+            <Typography sx={{ margin: "15% 0 0 15%" }}>
                 Already have an account ?
-                <Link sx={{fontWeight: "bold"}} onClick={props.handleLoginClick}> Login </Link>
+                <Link
+                    sx={{ fontWeight: "bold" }}
+                    onClick={props.handleLoginClick}
+                >
+                    {" "}
+                    Login{" "}
+                </Link>
             </Typography>
         </Box>
-    )
+    );
 }

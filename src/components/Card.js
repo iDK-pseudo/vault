@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
-import '../styles/Card.css';
+import { useState, useEffect } from "react";
+import "../styles/Card.css";
 
-function Card (props) {
-    
+function Card(props) {
     const [card, setCard] = useState({});
     const [logo, setLogo] = useState(null);
 
@@ -33,28 +32,18 @@ function Card (props) {
     */
     return (
         <div className="card">
-            <div className="logo-wrapper">
-                {logo}
-            </div>
+            <div className="logo-wrapper">{logo}</div>
             <div className="card-number">
-                <div>
-                    {card.cardnum1}
-                </div>
-                <div>
-                    {card.cardnum2}
-                </div>
-                <div>
-                    {card.cardnum3}
-                </div>
-                <div>
-                    {card.cardnum4}
-                </div>
+                <div>{card.cardnum1}</div>
+                <div>{card.cardnum2}</div>
+                <div>{card.cardnum3}</div>
+                <div>{card.cardnum4}</div>
             </div>
             <div className="card-detail-grid">
-            <div>
-                <p className="card-detail-title">Expires</p>
-                <p>{card.expires}</p>
-            </div>
+                <div>
+                    <p className="card-detail-title">Expires</p>
+                    <p>{card.expires}</p>
+                </div>
             </div>
         </div>
     );
