@@ -3,21 +3,16 @@ import Card from "@mui/material/Card";
 import BackgroundImage from "../../static/card_bg.jpg";
 import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
+import CardHeader from "@mui/material/CardHeader";
 import Box from "@mui/material/Box";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import IconButton from "@mui/material/IconButton";
 import Grid from "@mui/material/Grid";
-import CreditCardIcon from "@mui/icons-material/CreditCard";
-import { ReactComponent as Visa } from "../../static/visa.svg";
-import { ReactComponent as Rupay } from "../../static/rupay.svg";
-import { ReactComponent as MasterCard } from "../../static/mastercard.svg";
-import { ReactComponent as AmericanExpress } from "../../static/american_express.svg";
 
 export default function CreditCard({ card, handlePinEntry, locked }) {
     const [cardNumParts, setCardNumParts] = useState([]);
     const [cvv, setCVV] = useState("***");
-    const [logo, setLogo] = useState("");
     const [pinIcon, setPinIcon] = useState(0);
 
     useEffect(() => {
@@ -42,30 +37,6 @@ export default function CreditCard({ card, handlePinEntry, locked }) {
 
         if (card.cvv !== null) {
             setCVV(card.cvv);
-        }
-
-        if (card.cardType === "Mastercard") {
-            setLogo(
-                <MasterCard
-                    style={{ height: "50px", marginRight: 2, float: "right" }}
-                />
-            );
-        } else if (card.cardType === "Visa") {
-            setLogo(
-                <Visa
-                    style={{ height: "50px", marginRight: 2, float: "right" }}
-                />
-            );
-        } else if (card.cardType === "American Express") {
-            setLogo(
-                <AmericanExpress
-                    style={{ height: "50px", marginRight: 5, float: "right" }}
-                />
-            );
-        } else if (card.cardType === "Discover") {
-            setLogo(<Rupay style={{ height: "50px", float: "right" }} />);
-        } else {
-            setLogo(<CreditCardIcon sx={{ fontSize: "45px" }} />);
         }
     }, [card]);
 
@@ -99,14 +70,20 @@ export default function CreditCard({ card, handlePinEntry, locked }) {
                 backgroundSize: "cover",
             }}
         >
-            {logo}
+            <CardHeader
+                subheader="Alex Ferguson"
+                subheaderTypographyProps={{
+                    sx: {
+                        fontWeight: "bold",
+                    },
+                }}
+            />
             <CardContent>
                 <Box
                     sx={{
                         display: "flex",
                         alignItems: "center",
-                        marginTop: 8,
-                        color: "white",
+                        color: "rgba(0, 0, 0, 0.6)",
                         fontFamily: "SourceSansPro",
                         fontWeight: "bold",
                         fontSize: 32,
@@ -122,7 +99,7 @@ export default function CreditCard({ card, handlePinEntry, locked }) {
                             component="div"
                             sx={{
                                 fontSize: 12,
-                                color: "white",
+                                color: "rgba(0, 0, 0, 0.6)",
                                 fontWeight: "bold",
                                 fontFamily: "SourceSansPro",
                             }}
@@ -136,7 +113,7 @@ export default function CreditCard({ card, handlePinEntry, locked }) {
                             component="div"
                             sx={{
                                 fontSize: 12,
-                                color: "white",
+                                color: "rgba(0, 0, 0, 0.6)",
                                 fontWeight: "bold",
                                 fontFamily: "SourceSansPro",
                             }}
@@ -149,7 +126,7 @@ export default function CreditCard({ card, handlePinEntry, locked }) {
                     <Grid item xs={4}>
                         <Typography
                             sx={{
-                                color: "white",
+                                color: "rgba(0, 0, 0, 0.6)",
                                 fontWeight: "bold",
                                 fontSize: 18,
                                 fontFamily: "SourceSansPro",
@@ -161,7 +138,7 @@ export default function CreditCard({ card, handlePinEntry, locked }) {
                     <Grid item xs={4}>
                         <Typography
                             sx={{
-                                color: "white",
+                                color: "rgba(0, 0, 0, 0.6)",
                                 fontWeight: "bold",
                                 fontSize: 18,
                                 fontFamily: "SourceSansPro",

@@ -13,7 +13,7 @@ function Header(props) {
 
     return (
         <header>
-            <h1> Wallet </h1>
+            <h1> Vault </h1>
             {logout && (
                 <IconButton onClick={props.handleLogout}>
                     <LogoutIcon
