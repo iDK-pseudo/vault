@@ -6,9 +6,10 @@ const passport = require("passport");
 exports.login = function (req, res, next) {
     const errorsResult = validationResult(req);
     if (errorsResult.isEmpty()) {
-        passport.authenticate("local", (err, user, options) => {
-            if (user) {
-                req.logIn(user, () => {});
+        passport.authenticate("local", (err, info, options) => {
+            if (info) {
+                req.logIn(info.user, () => {});
+                req.session.passport.pinValid = info.pinValid;
                 res.send({ success: true });
             } else {
                 res.send({ success: false, ...options });
@@ -20,9 +21,10 @@ exports.login = function (req, res, next) {
 exports.lockedlogin = function (req, res, next) {
     const errorsResult = validationResult(req);
     if (errorsResult.isEmpty()) {
-        passport.authenticate("local", (err, user, options) => {
-            if (user) {
-                req.logIn(user, () => {});
+        passport.authenticate("local", (err, info, options) => {
+            if (info) {
+                req.logIn(info.user, () => {});
+                req.session.passport.pinValid = info.pinValid;
                 res.send({ success: true });
             } else {
                 res.send({ success: false, ...options });
@@ -108,7 +110,7 @@ exports.verify_pin = async function (req, res, next) {
         ) {
             res.send({ success: false });
         } else {
-            req.session[req.user] = { unlocked: true };
+            req.session.passport.pinValid = true;
             res.send({ success: true });
         }
     } else {
@@ -118,7 +120,11 @@ exports.verify_pin = async function (req, res, next) {
 
 exports.verify = function (req, res, next) {
     if (req.isAuthenticated()) {
-        res.send({ isLoggedIn: true, restrict: req.session.passport.restrict });
+        res.send({
+            isLoggedIn: true,
+            restrict: req.session.passport.restrict,
+            pinValid: req.session.passport.pinValid,
+        });
     } else {
         res.send({ isLoggedIn: false });
     }

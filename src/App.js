@@ -91,6 +91,7 @@ class App extends Component {
             if (verUser.restrict) {
                 this.setState({ display: "setupPin" });
             } else {
+                this.setState({ locked: verUser.pinValid });
                 this.handleLoginSuccess();
             }
         } else {

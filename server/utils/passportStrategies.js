@@ -49,7 +49,10 @@ exports.LocalStrategy = function () {
                         )
                     ) {
                         pinValid = true;
-                        await User.updateOne({ _id: email }, { locked: false });
+                        await User.updateOne(
+                            { email: email },
+                            { locked: false }
+                        );
                     } else {
                         pinValid = false;
                     }
@@ -63,7 +66,7 @@ exports.LocalStrategy = function () {
                 if (!isNaN(req.body.pin) && redisSession) {
                     if (req.body.pin == redisSession.code) {
                         await User.updateOne(
-                            { _id: email },
+                            { email: email },
                             { verified: true }
                         );
                         foundUser.verified = true;
@@ -103,8 +106,7 @@ exports.LocalStrategy = function () {
                         });
                     }
                 }
-                req.session[email] = { unlocked: pinValid };
-                return cb(null, email);
+                return cb(null, { user: email, pinValid });
             } else {
                 return cb(null, false, { message: "Incorrect credentials" });
             }

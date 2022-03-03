@@ -44,7 +44,7 @@ exports.cardlist = async function (req, res, next) {
     const entries = await Card.find({ user: req.user }).lean();
     const dEntries = CryptoHelper.dCardDetails(
         entries,
-        req.session.passport.restrict
+        req.session.passport.pinValid
     );
     res.send({ entries: dEntries });
 };
