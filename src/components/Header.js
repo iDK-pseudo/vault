@@ -6,7 +6,11 @@ function Header(props) {
     const [logout, setLogout] = useState(false);
 
     useEffect(() => {
-        if (props.display === "homepage" || props.display === "getStarted")
+        if (
+            props.display === "homepage" ||
+            props.display === "getStarted" ||
+            props.display === "setupPin"
+        )
             setLogout(true);
         else setLogout(false);
     }, [props.display]);

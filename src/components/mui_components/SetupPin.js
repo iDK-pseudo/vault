@@ -6,6 +6,8 @@ import BackspaceIcon from "@mui/icons-material/Backspace";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import APIUtils from "../../api/APIUtils";
+import CheckBoxRoundedIcon from "@mui/icons-material/CheckBoxRounded";
+import DoneOutlineRoundedIcon from "@mui/icons-material/DoneOutlineRounded";
 
 export default function SetupPin(props) {
     const [pin, setPin] = useState("");
@@ -29,23 +31,58 @@ export default function SetupPin(props) {
         }
         const value = e.target.innerText;
         if (!isNaN(value)) {
-            if (pin.length !== 6) {
+            if (pin.length < 6) {
                 setPin(pin + value);
                 setError(false);
             }
         }
     };
-    return (
-        <div style={{ marginTop: 100 }}>
-            <p
-                style={{
-                    textAlign: "center",
-                    fontFamily: "SourceSansPro",
+
+    const StyledButton = (props) => {
+        return (
+            <Button
+                variant="contained"
+                sx={{
+                    "&.MuiButton-root:hover": {
+                        background: "#98a7bb",
+                    },
                     fontSize: 20,
+                    height: 55,
+                    borderRadius: 4,
+                    boxShadow: "0 5px 5px rgb(0, 0, 0, 0.5)",
+                    background: props.id == "submit" ? "#049f00" : "#98a7bb",
+                }}
+                id={props.id}
+                onClick={props.id == "submit" ? handlePinEntry : handleEntry}
+            >
+                {props.num}
+            </Button>
+        );
+    };
+
+    return (
+        <div style={{ marginTop: 50 }}>
+            <h2 style={{ fontWeight: "bold", fontFamily: "SourceSansPro" }}>
+                Setup 2FA
+            </h2>
+            <ul
+                style={{
+                    marginTop: 30,
+                    fontFamily: "SourceSansPro",
+                    fontSize: 18,
                 }}
             >
-                Choose a strong 6 digit PIN for 2FA
-            </p>
+                <li style={{ marginBottom: 10 }}>
+                    Choose a strong 6 digit code for two factor authentication.{" "}
+                </li>
+                <li style={{ marginBottom: 10 }}>
+                    Make it as random/strong as possible.
+                </li>
+                <li style={{ marginBottom: 10 }}>
+                    This will be used to verify your identity after password is
+                    verified for better security.
+                </li>
+            </ul>
             <TextField
                 disabled
                 type="text"
@@ -53,82 +90,60 @@ export default function SetupPin(props) {
                 error={error}
                 variant="standard"
                 sx={{
-                    marginTop: 10,
+                    marginTop: 15,
                     marginBottom: 2,
                 }}
                 inputProps={{
                     sx: {
-                        fontSize: 30,
+                        fontSize: 35,
                         letterSpacing: 15,
                         textAlign: "center",
                     },
                 }}
             />
-            <Grid
-                container
-                columnSpacing={1}
-                rowSpacing={3}
-                sx={{ marginLeft: 2 }}
-            >
+            <Grid container rowSpacing={3} sx={{ marginLeft: 6, width: "80%" }}>
                 <Grid item xs={4}>
-                    <Button sx={{ fontSize: 30 }} onClick={handleEntry}>
-                        1
-                    </Button>
+                    <StyledButton num="1" />
                 </Grid>
                 <Grid item xs={4}>
-                    <Button sx={{ fontSize: 30 }} onClick={handleEntry}>
-                        2
-                    </Button>
+                    <StyledButton num="2" />
                 </Grid>
                 <Grid item xs={4}>
-                    <Button sx={{ fontSize: 30 }} onClick={handleEntry}>
-                        3
-                    </Button>
+                    <StyledButton num="3" />
                 </Grid>
                 <Grid item xs={4}>
-                    <Button sx={{ fontSize: 30 }} onClick={handleEntry}>
-                        4
-                    </Button>
+                    <StyledButton num="4" />
                 </Grid>
                 <Grid item xs={4}>
-                    <Button sx={{ fontSize: 30 }} onClick={handleEntry}>
-                        5
-                    </Button>
+                    <StyledButton num="5" />
                 </Grid>
                 <Grid item xs={4}>
-                    <Button sx={{ fontSize: 30 }} onClick={handleEntry}>
-                        6
-                    </Button>
+                    <StyledButton num="6" />
                 </Grid>
                 <Grid item xs={4}>
-                    <Button sx={{ fontSize: 30 }} onClick={handleEntry}>
-                        7
-                    </Button>
+                    <StyledButton num="7" />
                 </Grid>
                 <Grid item xs={4}>
-                    <Button sx={{ fontSize: 30 }} onClick={handleEntry}>
-                        8
-                    </Button>
+                    <StyledButton num="8" />
                 </Grid>
                 <Grid item xs={4}>
-                    <Button sx={{ fontSize: 30 }} onClick={handleEntry}>
-                        9
-                    </Button>
+                    <StyledButton num="9" />
                 </Grid>
                 <Grid item xs={4}>
-                    <IconButton id="backspace" onClick={handleEntry}>
-                        <BackspaceIcon fontSize="large" color="primary" />
-                    </IconButton>
+                    <StyledButton
+                        id="backspace"
+                        num={<BackspaceIcon fontSize="medium" />}
+                    />
                 </Grid>
                 <Grid item xs={4}>
-                    <Button sx={{ fontSize: 30 }} onClick={handleEntry}>
-                        0
-                    </Button>
+                    <StyledButton num="0" />
                 </Grid>
                 <Grid item xs={4}>
-                    <IconButton id="check" onClick={handlePinEntry}>
-                        <CheckIcon fontSize="large" color="primary" />
-                    </IconButton>
+                    <StyledButton
+                        id="submit"
+                        onClick={handlePinEntry}
+                        num={<CheckBoxRoundedIcon fontSize="medium" />}
+                    />
                 </Grid>
             </Grid>
         </div>
