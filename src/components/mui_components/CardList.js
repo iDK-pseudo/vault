@@ -45,9 +45,9 @@ export default function CardList(props) {
                                 : "black",
                         backgroundColor:
                             props.selectedCard._id === each._id
-                                ? "#CE7B91"
-                                : "#cfcacc",
-                        borderRadius: 4,
+                                ? "#98a7bb"
+                                : "#ECEDF3",
+                        borderRadius: 2,
                         marginBottom: 1,
                         height: 60,
                     }}

@@ -242,7 +242,14 @@ export default function AddCardDrawer(props) {
                 loading={loading}
                 variant="contained"
                 size="large"
-                sx={{ marginTop: "50px" }}
+                sx={{
+                    "&.MuiButton-root:hover": {
+                        background: "#F2A313",
+                    },
+                    marginTop: "50px",
+                    color: "white",
+                    background: "#F2A313",
+                }}
                 startIcon={<AddCardIcon />}
                 onClick={handleAddNewCard}
             >

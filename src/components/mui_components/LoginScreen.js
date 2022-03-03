@@ -244,15 +244,19 @@ export default function (props) {
             )}
             <LoadingButton
                 loading={loading}
-                variant="contained"
                 sx={{
+                    "&.MuiButton-root:hover": {
+                        background: "#1865F2",
+                    },
                     marginTop: 5,
                     padding: "15px 0",
                     width: "100%",
+                    background: "#1865F2",
+                    color: "white",
                 }}
                 onClick={handleLogin}
             >
-                Log in
+                Sign In
             </LoadingButton>
             <Typography sx={{ textAlign: "center", marginTop: 2 }}>
                 or
@@ -263,28 +267,30 @@ export default function (props) {
                         margin: "auto",
                         marginTop: 2,
                         width: "100%",
-                        height: "5vh",
-                        border: "1px solid grey",
-                        color: "black",
+                        height: "6vh",
+                        border: "1px solid #1865F2",
+                        fontWeight: "bold",
+                        boxShadow: "0 6px 5px rgba(0, 0, 0, 0.2)",
+                        color: "#1865F2",
                     }}
-                    startIcon={<GoogleIcon style={{ color: "black" }} />}
+                    startIcon={<GoogleIcon style={{ marginRight: 10 }} />}
                     href="http://localhost:3000/auth/google"
                 >
-                    <p
-                        style={{
-                            fontWeight: "bold",
-                        }}
-                    >
-                        Sign in with Google
-                    </p>
+                    <p style={{ fontSize: 15 }}>Sign in with Google</p>
                 </Button>
             </div>
             <Typography sx={{ margin: "50% 0 0 15%" }}>
                 Don't have an account ?
                 <Link
-                    sx={{ fontWeight: "bold" }}
+                    sx={{
+                        fontWeight: "bold",
+                        color: "#1865F2",
+                        textDecoration: "none",
+                        fontSize: 18,
+                    }}
                     onClick={props.handleSignUpClick}
                 >
+                    {" "}
                     Sign Up
                 </Link>
             </Typography>

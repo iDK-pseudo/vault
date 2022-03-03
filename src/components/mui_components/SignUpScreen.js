@@ -326,6 +326,7 @@ export default function SignUpScreen(props) {
                     marginTop: 5,
                     padding: "15px 0",
                     width: "100%",
+                    background: "#1865F2",
                 }}
                 onClick={handleSignUp}
             >
@@ -334,7 +335,12 @@ export default function SignUpScreen(props) {
             <Typography sx={{ margin: "15% 0 0 15%" }}>
                 Already have an account ?
                 <Link
-                    sx={{ fontWeight: "bold" }}
+                    sx={{
+                        fontWeight: "bold",
+                        color: "#1865F2",
+                        textDecoration: "none",
+                        fontSize: 18,
+                    }}
                     onClick={props.handleLoginClick}
                 >
                     {" "}
