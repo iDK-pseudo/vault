@@ -238,6 +238,19 @@ export default function AddCardDrawer(props) {
                     />
                 </div>
             </div>
+            <p
+                style={{
+                    display: "flex",
+                    marginTop: 20,
+                    fontSize: 15,
+                    justifyContent: "center",
+                    fontFamily: "SourceSansPro",
+                    color: "#98a7bb",
+                }}
+            >
+                <LockIcon style={{ marginRight: 5, fontSize: 15 }} /> 256 bit
+                encryption
+            </p>
             <LoadingButton
                 loading={loading}
                 variant="contained"
@@ -246,7 +259,7 @@ export default function AddCardDrawer(props) {
                     "&.MuiButton-root:hover": {
                         background: "#F2A313",
                     },
-                    marginTop: "50px",
+                    marginTop: "30px",
                     color: "white",
                     background: "#F2A313",
                 }}
