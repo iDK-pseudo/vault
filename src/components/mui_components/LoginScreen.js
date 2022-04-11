@@ -274,7 +274,7 @@ export default function (props) {
                         color: "#1865F2",
                     }}
                     startIcon={<GoogleIcon style={{ marginRight: 10 }} />}
-                    href="http://localhost:3000/auth/google"
+                    href="/auth/google"
                 >
                     <p style={{ fontSize: 15 }}>Sign in with Google</p>
                 </Button>

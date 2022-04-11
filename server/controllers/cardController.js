@@ -35,7 +35,7 @@ exports.last_card = async function (req, res, next) {
         .limit(1);
     const dEntry = CryptoHelper.dCardDetails(
         entry,
-        req.session[req.user].unlocked
+        req.session.passport.restrict
     );
     res.send({ entry: dEntry });
 };
